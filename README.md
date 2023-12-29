@@ -1,2 +1,2 @@
-# movietheater_local
+# MovieTheater
  
