@@ -24,9 +24,11 @@ db_credential: DbCredential
 # use python anywhere credential when file exists
 if os.path.exists('pa_connection.py'):
     from pa_connection import db_credential as pa_credential
+
     db_credential = pa_credential
 else:
     from local_connection import db_credential as local_credential
+
     db_credential = local_credential
 
 db = Database(db_credential)
@@ -36,18 +38,23 @@ salt = bcrypt.gensalt()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-# # login_manager.login_view = 'login'  # type: ignore
+# login_manager.login_view = 'login'  # type: ignore
 
 @login_manager.user_loader
 def load_user(user_id: str):
+    try:
+        return db.get_user(int(user_id))
+    except:
+        print(f"unable to get user for id:{user_id}, unable to parse as int")
+        return None
 
-    pass
 
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login/login.html')
+
 
 # Homepage
 @app.route('/')
