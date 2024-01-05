@@ -23,6 +23,19 @@ Login
                     <form method="POST">
                         <div class="card-body">
                             <h1>Sign In</h1>
+
+                            {% if login_form.errors %}
+                            <div class="alert alert-danger form-control is-invalid" role="alert">
+                                <ul>
+                                    {% for field, errors in login_form.errors.items() %}
+                                    {% for error in errors %}
+                                    <li>{{ field }}: {{ error }}</li>
+                                    {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+
                             <p class="text-muted">Sign In to your account</p>
                             {{ login_form.csrf_token }}
                             <div class="form-group input-group">

@@ -162,7 +162,8 @@ class Database:
         print(f"new_db_user: {new_db_user}")
         return db_user(new_db_user)
 
-    def get_user(self, id: int) -> User|None:
+    def get_user_by_id(self, id: int|str) -> User|None:
+        id = id if isinstance(id, int) else int(id)
         db_obj = self.get_item('user', {'id': id})
         return db_user(db_obj)
     def get_user(self, params: dict[str, Any]) -> User|None:

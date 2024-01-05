@@ -7,6 +7,7 @@ def db_user(db_obj: dict[str, Any]) -> User | None:
     if db_obj is None:
         return None
 
+
     return User(
         db_obj['first_name'],
         db_obj['last_name'],
@@ -18,5 +19,6 @@ def db_user(db_obj: dict[str, Any]) -> User | None:
         db_obj['is_staff'],
         db_obj['is_admin'],
         db_obj['is_manager'],
-        db_obj['id'],
+        db_obj['date_joined'],
+        int(db_obj['id']),
     )

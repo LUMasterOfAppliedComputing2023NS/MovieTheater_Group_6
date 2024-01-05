@@ -8,6 +8,7 @@ from flask import Flask, request, url_for, flash
 from flask import redirect
 from flask import render_template
 from flask_login import LoginManager, login_required, logout_user
+from wtforms.validators import ValidationError
 
 from database.database import Database
 from database.db_credential import DbCredential
@@ -47,7 +48,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id: str):
     try:
-        return db.get_user(int(user_id))
+        return db.get_user_by_id(user_id)
     except:
         print(f"unable to get user for id:{user_id}, unable to parse as int")
         return None
@@ -70,18 +71,18 @@ def logout():
 def login():
     # Get Form Fields
     login_form = LoginForm(request.form)
-    register_form = RegisterForm(request.form)
 
     if request.method == 'POST':
         # When user clicked on submit from login page
         if login_form.login_submit.data and login_form.validate_on_submit():
+
             email = login_form.email_address.data
             password = login_form.password.data
             remember_me = login_form.remember_me.data
 
-
             if email is None or len(email) == 0:
-                return show_error("Email is empty", 'login')
+                login_form.email_address.errors.append("Email is empty")
+                return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
 
             # Get user by email
             user = db.get_user({'email': email}) or "unable to find user with given credentials"
@@ -93,19 +94,21 @@ def login():
                 flask_login.login_user(user, remember=remember_me)
                 return redirect(url_for('home'))
             elif isinstance(user, str):
-                return show_error(user, 'login')
+                login_form.email_address.errors.append(str)
             else:
-                show_error("Invalid user credentials, please check again", 'login')
+                login_form.email_address.errors.append("Invalid user credentials, please check again")
 
     return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
+    form = RegisterForm(request.form)
+
     if request.method == 'POST':
         # When user clicked on submit from register page
-        if form.validate_on_submit():
+        if form.is_submitted():
+            error_out = False
             email = form.email_address.data
             first_name = form.first_name.data
             last_name = form.last_name.data
@@ -114,15 +117,22 @@ def register():
             password = form.password.data.encode('utf-8')
             confirm_password = form.confirm_password.data.encode('utf-8')
 
+            if form.validate():
+                pass
+
             if password != confirm_password:
-                return show_error("Password does not match", 'register')
+                form.password.errors.append("Password does not match")
+                error_out = True
+
+                # return show_error("Password does not match", 'register')
             if email is not None and len(email) != 0:
-                user = db.get_item('user', 'email', email)
+                user = db.get_item('user', {'email': email})
                 if user is not None:
-                    error = "Email already exists"
-                    print(error)
-                    flash(error)
-                    return redirect(url_for('login'))
+                    form.email_address.errors.append("Email already in use")
+                    error_out = True
+
+            if error_out:
+                return render_template('login/register.html', form=form)
 
             # create user
             pass_hash = bcrypt.hashpw(password, salt)
@@ -150,7 +160,7 @@ def register():
 # Homepage
 @app.route('/')
 def home():
-    return redirect('login')
+    return render_template('home.html')
 
 #
 # # handles login and registration
