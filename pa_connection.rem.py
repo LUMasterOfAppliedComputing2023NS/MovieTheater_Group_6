@@ -1,4 +1,8 @@
 from database.db_credential import DbCredential
 db_credential = DbCredential(
-    db_user="root", db_pass="0918", db_host='127.0.0.1', db_port="3306", db_name="movietheater"
+    db_user="yana00918",
+    db_pass="123456",
+    db_host='yana00918.mysql.pythonanywhere-services.com',
+    db_port="3306",
+    db_name="yana00918$movietheater"
 )

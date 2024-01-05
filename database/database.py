@@ -157,6 +157,14 @@ class Database:
         return new_item
 
     # specific use cases
+    def create_user(self, params: dict[str, Any]):
+        new_db_user = self.create_item('user', params)
+        print(f"new_db_user: {new_db_user}")
+        return db_user(new_db_user)
+
     def get_user(self, id: int) -> User|None:
         db_obj = self.get_item('user', {'id': id})
+        return db_user(db_obj)
+    def get_user(self, params: dict[str, Any]) -> User|None:
+        db_obj = self.get_item('user', params)
         return db_user(db_obj)
