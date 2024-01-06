@@ -5,24 +5,22 @@ from wtforms.validators import InputRequired, Email, Length, DataRequired
 from wtforms.fields import TelField, EmailField
 
 class LoginForm(FlaskForm):
-    emailField = EmailField("", validators=[InputRequired(), Email()], render_kw={
-        "placeholder": "Email Address"})
-    password = PasswordField("", validators=[InputRequired(), Length(
-        min=1, max=50)], render_kw={"placeholder": "Password"})
-    RegisterSubmit = SubmitField("Login")
+    email_address = EmailField("", validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address", "class": "form-control"}, default='test@test.com')
+    password = PasswordField("", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password", "class": "form-control"})
+    remember_me = BooleanField('Remember Me')
+    login_submit = SubmitField("Login", render_kw={"class": "btn btn-primary px-4", "type": "submit"})
     pass
 
 class RegisterForm(FlaskForm):
-    FullName = StringField("", validators=[InputRequired(), Length(
-        min=1, max=30)], render_kw={"placeholder": "Full Name"})
-    PhoneNumber = StringField("", validators=[InputRequired(), Length(
-        min=1, max=15)], render_kw={"placeholder": "Phone Number"})
-    UserType = SelectField("", validators=[InputRequired()], choices=[(
-        "customer", "customer"), ("staff", "staff"), ("admin", "admin")])
-    Address = StringField("", validators=[], render_kw={
-        "placeholder": "Address"})
-    EmailAddress = EmailField("", validators=[InputRequired(), Email()], render_kw={
-        "placeholder": "Email Address"})
-    Password = PasswordField("", validators=[InputRequired(), Length(
-        min=1, max=50)], render_kw={"placeholder": "Password"})
-    RegisterSubmit = SubmitField("Register")
+
+    email_address = EmailField("Email:", validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address", "class": "form-control"}, default='test@test.com')
+    first_name = StringField("First name:", validators=[InputRequired(), Length(min=1, max=30)], render_kw={"placeholder": "First Name"}, default='')
+    last_name = StringField("Last name:", validators=[InputRequired(), Length(min=1, max=30)], render_kw={"placeholder": "Last Name"}, default='')
+    phone_number = StringField("Phone No. :", validators=[InputRequired(), Length(min=1, max=15)], render_kw={"placeholder": "Phone Number"}, default='')
+    # UserType = SelectField("", validators=[InputRequired()], choices=[(
+    #     "customer", "customer"), ("staff", "staff"), ("admin", "admin")])
+    address = StringField("Address:", validators=[], render_kw={"placeholder": "Address"})
+    date_of_birth = DateField("Date of birth:", validators=[], render_kw={"placeholder": "Date of Birth"})
+    password = PasswordField("Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password"}, default='password')
+    confirm_password = PasswordField("Confirm Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Confirm Password"}, default='password')
+    register_submit = SubmitField("Register", render_kw={"class": "btn btn-primary px-4", "type": "submit"})
