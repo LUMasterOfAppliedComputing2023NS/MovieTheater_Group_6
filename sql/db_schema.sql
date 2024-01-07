@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS seat(
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     hall_id INT NOT NULL,
     seat_number INT NOT NULL,
-    row INT NOT NULL,
-    col INT NOT NULL,
+    `row` INT NOT NULL,
+    `col` INT NOT NULL,
     type int not null default 0,
     price double not null,
     FOREIGN KEY (hall_id) REFERENCES hall(id)
@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS coupon (
 CREATE TABLE IF NOT EXISTS seat(
     hall_id INT NOT NULL,
     seat_id_in_hall INT NOT NULL,
-    row INT NOT NULL,
-    col INT NOT NULL,
+    `row` INT NOT NULL,
+    `col` INT NOT NULL,
     type int not null default 0,
     price double not null,
     primary key (hall_id, seat_id_in_hall),
