@@ -13,6 +13,7 @@ from controller import Controller
 from database.db_credential import DbCredential
 from forms import LoginForm, RegisterForm
 from model.user import User
+from app_constants import TmdbConstants
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -20,14 +21,12 @@ app.config['SECRET_KEY'] = 'secret'
 db_credential: DbCredential
 if os.path.exists('db_connection.py'):
     from db_connection import db_credential as pa_credential
-
     db_credential = pa_credential
 else:
     raise Exception(
         "unable to find db_connection.py, please refer to db_connection.py.example and create one with correct db connection credentials")
 
 controller = Controller(db_credential)
-bcrypt: Bcrypt = Bcrypt(app)
 salt = bcrypt.gensalt()
 
 login_manager = LoginManager()
@@ -40,6 +39,10 @@ def handle_needs_login():
     flash("You have to be logged in to access this page.")
     return redirect(url_for('login', next=request.endpoint))
 
+
+@app.route("/poster/<poster_path>", methods=["GET"])
+def poster_url(poster_path: str):
+    return redirect(f"{TmdbConstants.tmdb_poster_api_url}{poster_path}")
 
 @login_manager.user_loader
 def load_user(user_id: str):
@@ -151,4 +154,12 @@ def register():
 # Homepage
 @app.route('/')
 def home():
-    return render_template('home.html')
+    showing_movies = controller.get_showing_movies()
+    up_coming_movies = controller.get_upcoming_movies()
+    return render_template('home.html', showing_movies=showing_movies, up_coming_movies=up_coming_movies)
+
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)

@@ -14,4 +14,4 @@ class TmdbConstants:
 
 class DBConstants:
     schema_file = "sql/db_schema.sql"
-    data_fil = "sql/data.sql"
+    data_file = "sql/data.sql"

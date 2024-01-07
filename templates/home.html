@@ -8,6 +8,12 @@
 
 {% block content %}
 
+    {% if showing_movies %}
+        {% for movie in showing_movies %}
+            {% from 'templates/movie_card.html' import movie_card %}
+            {{ movie_card(movie) }}
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}
 

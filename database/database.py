@@ -2,6 +2,7 @@ from datetime import date
 from typing import Any
 
 import mysql
+from _mysql_connector import MySQLInterfaceError
 from mysql.connector import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 
@@ -14,34 +15,88 @@ class Database:
 
     def __init__(self, credential: DbCredential):
         self.credential = credential
-        self.conn: MySQLConnection | None = None
-        print(f"database initialized with:{credential}")
+        self.__conn: MySQLConnection | None = None
+        self.__cursor: MySQLCursor | None = None
+        print(f"database created with:{credential}")
 
-    def init_conn(self):
-        return mysql.connector.connect(
-            user=self.credential.db_user,
-            password=self.credential.db_pass,
-            host=self.credential.db_host,
-            database=self.credential.db_name,
-            port=self.credential.db_port,
-            autocommit=True
-        )
+    def __init_conn(self):
+        conn: MySQLConnection
+        try:
+            conn = mysql.connector.connect(
+                user=self.credential.db_user,
+                password=self.credential.db_pass,
+                host=self.credential.db_host,
+                database=self.credential.db_name,
+                port=self.credential.db_port,
+                autocommit=True
+            )
+            conn.connect()
+        except MySQLInterfaceError as err:
+            print(f"failed to connect to db, error: {err}")
+            conn = mysql.connector.connect(
+                user=self.credential.db_user,
+                password=self.credential.db_pass,
+                # database=self.credential.db_name,
+                host=self.credential.db_host,
+                port=self.credential.db_port,
+                autocommit=True
+            )
+
+        conn.autocommit = True
+        return conn
 
     @property
-    def cursor(self) -> MySQLCursor:
+    def conn(self) -> MySQLConnection:
+        __conn = self.__conn
+
         try:
-            if self.conn is None:
+            if __conn is None or not __conn.is_connected():
                 raise mysql.connector.InterfaceError("conn is not established yet")
 
-            self.conn.ping(
+            __conn.ping(
                 reconnect=True,
                 attempts=3,
                 delay=5,
             )
-        except mysql.connector.InterfaceError as err:
-            self.conn = self.init_conn()
+        except Exception as err:
+            __conn = self.__init_conn()
+            self.__conn = __conn
 
-        return self.conn.cursor(dictionary=True)
+        return __conn
+
+    def disconnect(self):
+        __cursor = self.__cursor
+        if __cursor is not None:
+            __cursor.close()
+            self.__cursor = None
+
+        __conn = self.__conn
+        if __conn is not None:
+            __conn.commit()
+            __conn.close()
+            self.__conn = None
+
+    @property
+    def cursor(self, close: bool = True) -> MySQLCursor:
+        __cursor = self.__cursor
+        if close and __cursor is not None:
+            __cursor.close()
+
+        __cursor = self.conn.cursor(dictionary=True)
+        self.__cursor = __cursor
+        return __cursor
+
+    def commit(self, block):
+        try:
+            conn = self.conn
+            cursor = self.cursor
+            block(conn, cursor)
+            cursor.close()
+            conn.commit()
+        except Exception as err:
+            print(f"failed to commit, error: {err}")
+            self.conn.rollback()
+
 
     ## common use cases
     def get_item(self, table_name: str, params: dict[str, Any]):
@@ -67,7 +122,7 @@ class Database:
         cursor.execute(sql)
         return cursor.fetchone()
 
-    def get_items(self, table_name: str, params: dict[str, Any]):
+    def get_items(self, table_name: str, params: dict[str, Any] = None):
         sql = f"SELECT * from {table_name} "
         params = params or {}
 
@@ -91,12 +146,10 @@ class Database:
         return cursor.fetchall()
 
     def create_item(self, table_name: str, item: dict[str, Any], ignore_id: bool = True):
-        pairs = {}
-        if ignore_id:
-            for k, v in item.items():
-                if k == 'id':
-                    continue
-                pairs[k] = v
+        pairs = item
+        if ignore_id or item['id'] is None or item['id'] == -1 or item['id'] == '':
+            if 'id' in item:
+                del pairs['id']
         else:
             pairs = item
 
@@ -108,6 +161,23 @@ class Database:
         last_id = cursor.lastrowid
         new_item = self.get_item(table_name, {'id': last_id})
         return new_item
+
+    def create_items(self, table_name: str, items: list[dict[str, Any]], ignore_id: bool = False):
+        pairs = items
+        for item in pairs:
+            if ignore_id and 'id' in item:
+                del pairs['id']
+            elif 'id' in item and (item['id'] is None or item['id'] == -1 or item['id'] == ''):
+                del item['id']
+
+        columns = "`%s`" % '`,`'.join(pairs[0].keys())
+        placeholders = ', '.join(['%s'] * len(pairs[0].keys()))
+        sql = "INSERT INTO %s (%s) VALUES ( %s )" % (table_name, columns, placeholders)
+        cursor = self.cursor
+        cursor.executemany(sql, [list(pairs.values()) for pairs in pairs])
+        cursor.close()
+        self.conn.commit()
+        return cursor.rowcount
 
     def delete_item_by_id(self, table: str, id: int):
         sql = f"DELETE FROM {table} WHERE id=%s"
@@ -142,13 +212,13 @@ class Database:
         cursor = self.cursor
         cursor.execute(sql, (str(id),))
         self.conn.commit()
+
         rowcount = cursor.rowcount
         last_id = cursor.lastrowid
 
         new_item = self.get_item(table_name, {'id': id})
         print(f"updated {table_name}, rowcount:{rowcount}, last_id:{last_id}, new_item:{new_item}")
         return new_item
-
 
     # region Users
     # def create_user(self, params: dict[str, Any]):
@@ -166,11 +236,10 @@ class Database:
     #     return db_user(db_obj)
     # endregion
 
-
-    def get_movie(self, params: dict[str, Any], limit: int|None = None, offset: int|None = None):
+    def get_movie(self, params: dict[str, Any], limit: int | None = None, offset: int | None = None):
         return self.get_item('movie', params)
 
-    def get_showing_movies(self, limit: int|None = None, offset: int|None = None):
+    def get_showing_movies(self, limit: int | None = None, offset: int | None = None):
         sql = '''
             SELECT
                 m.*,

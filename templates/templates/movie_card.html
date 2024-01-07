@@ -1,0 +1,9 @@
+{% macro movie_card(movie) %}
+    <p>Id: {{ movie['id'] }}</p>
+    <p>Title: {{ movie['title'] }}</p>
+    <p>Overview: {{ movie['overview'] }}</p>
+    <p>Poster: {{ url_for("poster_url", poster_path=movie['poster_path']) }}</p>
+    <img src="{{ url_for("poster_url", poster_path=movie['poster_path']) }}" alt="poster" width="500">
+    <p>next_date: {{ movie['next_date'] }}</p>
+    <br />
+{% endmacro %}

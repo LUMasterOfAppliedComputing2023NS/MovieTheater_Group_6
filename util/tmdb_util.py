@@ -2,7 +2,6 @@ import json
 import os
 import urllib
 from pathlib import Path
-from typing import Optional
 from urllib.request import urlopen
 
 from mysql.connector.cursor import MySQLCursor
@@ -11,21 +10,18 @@ from tqdm import tqdm
 from app_constants import TmdbConstants
 
 def load_tmdb_movie_genres(
+        save_to_db: MySQLCursor|None = None,
         lang: str = 'en',
         base_url: str = TmdbConstants.tmdb_api_base_url,
         endpoint: str = TmdbConstants.tmdb_api_movie_genre_endpoint,
         api_key: str = TmdbConstants.tmdb_api_key,
-        save_to_db: MySQLCursor|None = None,
 ):
     url = f"{base_url}{endpoint}?api_key={api_key}&language={lang}"
     response = urlopen(url)
     json_response = json.loads(response.read())['genres']
     return load_movie_genre(json_response, save_to_db)
 
-def load_json_movie_genres(
-        json_file: str,
-        save_to_db: MySQLCursor|None = None,
-):
+def load_json_movie_genres(json_file: str,save_to_db: MySQLCursor|None = None):
     with open(json_file, 'r') as f:
         content = json.load(f)
         return load_movie_genre(content, save_to_db)
@@ -44,10 +40,10 @@ def load_movie_genre(content, save_to_db: MySQLCursor|None = None):
         mapping[i['id']] = i['name']
 
     if save_to_db is not None:
-        sql = """INSERT IGNORE INTO genre (id, name) VALUES (?,?)"""
+        sql = """INSERT IGNORE INTO genre (id, name) VALUES (%s, %s)"""
         save_to_db.executemany(sql, items)
-        save_to_db.commit()
-        print(f"import to db success, total_changes: {save_to_db.total_changes}")
+
+        print(f"import to db success")
 
     return mapping
 
@@ -60,17 +56,17 @@ def load_movie_items(
         poster_save_location: str = TmdbConstants.poster_save_location
 ):
     if db is not None:
-        sql_movie = """INSERT IGNORE INTO movie (id, original_language, overview, poster_path, release_date, title) VALUES (?,?,?,?,?,?)"""
-        sql_genre = """INSERT IGNORE INTO movie_genre (movie_id, genre_id) VALUES (?,?) """
+        sql_movie = """INSERT IGNORE INTO movie (id, original_language, overview, poster_path, release_date, title) VALUES (%s,%s,%s,%s,%s,%s)"""
+        sql_genre = """INSERT IGNORE INTO movie_genre (movie_id, genre_id) VALUES (%s,%s) """
         db.executemany(sql_movie, movies)
-        movies_changes = db.total_changes
+        # movies_changes = db.total_changes
 
         for (id, genres) in genres.items():
             for genre in genres:
                 db.execute(sql_genre, (id, genre))
-        print(f"import movies to db success, movies:{movies_changes}, genres:{len(genres)}")
+        print(f"import movies to db success, movies:{len(movies)}, genres:{len(genres)}")
 
-        db.commit()
+        # db.commit()
 
     if posters is not None \
             and len(posters) != 0 \
@@ -115,7 +111,7 @@ def get_movies_from_json(file_path: str):
 def get_movies_from_tmdb_api(
         base_url: str = TmdbConstants.tmdb_api_base_url,
         endpoint: str = TmdbConstants.tmdb_api_top_rated_endpoint,
-        page_range: [] = range(1, 1),
+        page_range: [] = range(1, 5),
         api_key: str = TmdbConstants.tmdb_api_key,
 ):
     # https://api.themoviedb.org/3/movie/top_rated?page=2&api_key={api_key}
@@ -142,7 +138,7 @@ def get_movies_from_tmdb_api(
 def save_movies_from_api(
         base_url: str = "https://api.themoviedb.org/3",
         endpoint: str = "/movie/top_rated",
-        page_range: [] = range(1, 1),
+        page_range: [] = range(1, 5),
         api_key: str = '1f54bd990f1cdfb230adb312546d765d',
         save_to_db: MySQLCursor|None = None,
         skip_download_posters: bool = False,

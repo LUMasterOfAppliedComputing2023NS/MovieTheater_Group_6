@@ -1,13 +1,13 @@
 DROP DATABASE IF EXISTS movietheater;
 # DROP TABLE IF EXISTS payment;
-# DROP TABLE IF EXISTS movie_genres;
-# DROP TABLE IF EXISTS movies;
-# DROP TABLE IF EXISTS genres;
+# DROP TABLE IF EXISTS movie_genre;
+# DROP TABLE IF EXISTS movie;
+# DROP TABLE IF EXISTS genre;
+# DROP TABLE IF EXISTS screening;
 # DROP TABLE IF EXISTS booking;
-# DROP TABLE IF EXISTS screenings;
 # DROP TABLE IF EXISTS user;
-# DROP TABLE IF EXISTS seats;
-# DROP TABLE IF EXISTS halls;
+# DROP TABLE IF EXISTS seat;
+# DROP TABLE IF EXISTS hall;
 # DROP TABLE IF EXISTS coupon;
 
 
@@ -59,18 +59,6 @@ CREATE TABLE IF NOT EXISTS hall(
     number_of_columns INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS seat(
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    hall_id INT NOT NULL,
-    seat_number INT NOT NULL,
-    row INT NOT NULL,
-    col INT NOT NULL,
-    type int not null default 0,
-    price double not null,
-    FOREIGN KEY (hall_id) REFERENCES hall(id)
-);
-
-
 CREATE TABLE IF NOT EXISTS screening
 (
 	id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -81,6 +69,31 @@ CREATE TABLE IF NOT EXISTS screening
     available_seats INT NOT NULL,
 	FOREIGN KEY (hall_id) REFERENCES hall(id),
 	FOREIGN KEY (movie_id) REFERENCES movie(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS booking(
+    id INTEGER auto_increment PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_date_time datetime NOT NULL default CURRENT_TIMESTAMP,
+    status INT NOT NULL default 0,
+    screening_id INT NOT NULL,
+    price_total double not null,
+    payment_id INT default null,
+
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (screening_id) REFERENCES screening(id)
+);
+
+CREATE TABLE IF NOT EXISTS seat (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL,
+    seat_number INT NOT NULL,
+    row INT NOT NULL,
+    col INT NOT NULL,
+    type int not null default 0,
+    price double not null,
+    FOREIGN KEY (booking_id) REFERENCES booking(id)
 );
 
 CREATE TABLE IF NOT EXISTS coupon (
@@ -94,32 +107,6 @@ CREATE TABLE IF NOT EXISTS coupon (
 );
 
 
-CREATE TABLE IF NOT EXISTS seat(
-    hall_id INT NOT NULL,
-    seat_id_in_hall INT NOT NULL,
-    row INT NOT NULL,
-    col INT NOT NULL,
-    type int not null default 0,
-    price double not null,
-    primary key (hall_id, seat_id_in_hall),
-    FOREIGN KEY (hall_id) REFERENCES hall(id)
-);
-
-
-
-CREATE TABLE IF NOT EXISTS booking(
-    id INTEGER auto_increment PRIMARY KEY,
-    user_id INT NOT NULL,
-    created_date_time datetime NOT NULL default CURRENT_TIMESTAMP,
-    status INT NOT NULL default 0,
-    screening_id INT NOT NULL,
-    seats JSON default('[]'),
-    price_total double not null,
-    payment_id INT default null,
-
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (screening_id) REFERENCES screening(id)
-);
 
 CREATE TABLE IF NOT EXISTS payment(
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
