@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS movietheater;
+# DROP DATABASE IF EXISTS movietheater;
 # DROP TABLE IF EXISTS payment;
 # DROP TABLE IF EXISTS movie_genre;
 # DROP TABLE IF EXISTS movie;
@@ -11,8 +11,8 @@ DROP DATABASE IF EXISTS movietheater;
 # DROP TABLE IF EXISTS coupon;
 
 
-CREATE DATABASE IF NOT EXISTS movietheater;
-USE movietheater;
+# CREATE DATABASE IF NOT EXISTS movietheater;
+# USE movietheater;
 
 CREATE TABLE IF NOT EXISTS user (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,

@@ -19,6 +19,7 @@ class Controller:
     def __init__(self, db_credential: DbCredential):
         self.db_credential = db_credential
         self.db = Database(db_credential)
+        self.__create_tables()
         # self.reset_db(
         #     recreate_db=False,
         #     load_preset_data=True,
@@ -32,7 +33,6 @@ class Controller:
         if recreate_db:
             self.__recreate_db()
             self.__create_tables()
-        else:
             self.db.conn.commit()
 
         if load_preset_data:
