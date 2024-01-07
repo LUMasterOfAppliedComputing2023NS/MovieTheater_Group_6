@@ -1,6 +1,8 @@
 # MovieTheater
  
 ###
-To use different database credential for local development and python anywhere:
-1. rename `pa_connection.rem.py` to `pa_connection.py` and put in the correct credential
-2. modify `local_connection` for local db connection
+To use different database credential for different environment (local vs python anywhere):
+1. copy `db_connection_template.py` to `db_connection.py`
+2. modify the content of `db_connection.py` with the correct credential for the environment
+
+Note, any file with the name `db_connection_*.py` will be ignored by git.

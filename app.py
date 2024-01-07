@@ -28,14 +28,12 @@ app.config['SECRET_KEY'] = 'secret'
 
 db_credential: DbCredential
 # use python anywhere credential when file exists
-if os.path.exists('pa_connection.py'):
-    from pa_connection import db_credential as pa_credential
-
+if os.path.exists('db_connection.py'):
+    from db_connection import db_credential as pa_credential
     db_credential = pa_credential
 else:
-    from local_connection import db_credential as local_credential
+    raise Exception("unable to find db_connection.py, please refer to db_connection.py.example and create one with correct db connection credentials")
 
-    db_credential = local_credential
 
 db = Database(db_credential)
 controller = Controller(db)

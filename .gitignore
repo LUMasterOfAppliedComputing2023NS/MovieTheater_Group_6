@@ -157,6 +157,7 @@ cython_debug/
 .idea/dataSources.local.xml
 .idea/git_toolbox_prj.xml
 
-pa_connection.py
-local_connection.py
+
+db_connection*.py
+!db_connection.py.example
 
