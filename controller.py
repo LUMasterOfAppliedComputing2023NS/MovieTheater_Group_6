@@ -1,17 +1,34 @@
 from typing import Any
 
 from database.database import Database
+from database.db_credential import DbCredential
 from database.mapper import db_user
 from model.user import User
 
 
 class Controller:
-    currently_showing_time_hours = 2 * 24 # 2 days
+    currently_showing_time_hours = 2 * 24  # 2 days
 
 
-    def __init__(self, db: Database):
-        self.db = db
+    def __init__(self, db_credential: DbCredential):
+        self.db = Database(db_credential)
+
         pass
+
+    # region DB Management
+    def reset_db(self, load_tmdb_movie: bool = False):
+
+        pass
+
+
+    def __recreate_db(self):
+
+        pass
+
+    def __load_tmdb_movie(self):
+        pass
+    # endregion
+
 
 
     # region User

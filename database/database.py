@@ -11,13 +11,8 @@ from model.user import User
 
 
 class Database:
-    # connection: MySQLConnection | None = None
 
-    def __init__(self, credential: DbCredential | None = None):
-        if credential is None:
-            from local_connection import db_credential
-            credential = db_credential
-
+    def __init__(self, credential: DbCredential):
         self.credential = credential
         self.conn: MySQLConnection | None = None
         print(f"database initialized with:{credential}")

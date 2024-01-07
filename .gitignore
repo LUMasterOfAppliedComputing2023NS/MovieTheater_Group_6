@@ -159,5 +159,5 @@ cython_debug/
 
 
 db_connection*.py
-!db_connection.py.example
+!db_connection.example.py
 

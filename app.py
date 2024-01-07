@@ -1,4 +1,3 @@
-# from flask_bcrypt import Bcrypt
 import os.path
 from datetime import date
 
@@ -7,43 +6,33 @@ import flask_login
 from flask import Flask, request, url_for, flash
 from flask import redirect
 from flask import render_template
+from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_required, logout_user
-from wtforms.validators import ValidationError
 
 from controller import Controller
-from database.database import Database
 from database.db_credential import DbCredential
 from forms import LoginForm, RegisterForm
 from model.user import User
-
-#
-# import app_constants
-# import database
-# from form import ChangePasswordForm, ProfileForm, RegisterForm, LoginForm, EditMovieForm, CreateOrEditStaffForm
-# from model import *
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 
 db_credential: DbCredential
-# use python anywhere credential when file exists
 if os.path.exists('db_connection.py'):
     from db_connection import db_credential as pa_credential
+
     db_credential = pa_credential
 else:
-    raise Exception("unable to find db_connection.py, please refer to db_connection.py.example and create one with correct db connection credentials")
+    raise Exception(
+        "unable to find db_connection.py, please refer to db_connection.py.example and create one with correct db connection credentials")
 
-
-db = Database(db_credential)
-controller = Controller(db)
-# bcrypt: Bcrypt = Bcrypt(app)
+controller = Controller(db_credential)
+bcrypt: Bcrypt = Bcrypt(app)
 salt = bcrypt.gensalt()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-# login_manager.login_view = 'login'  # type: ignore
-
+login_manager.login_view = 'login'  # type: ignore
 
 
 @login_manager.unauthorized_handler
@@ -51,26 +40,22 @@ def handle_needs_login():
     flash("You have to be logged in to access this page.")
     return redirect(url_for('login', next=request.endpoint))
 
+
 @login_manager.user_loader
 def load_user(user_id: str):
     try:
-        return db.get_user_by_id(user_id)
+        return controller.get_user_by_id(user_id)
     except:
         print(f"unable to get user for id:{user_id}, unable to parse as int")
         return None
 
-
-# def show_error(error: str, redirect_url: str|None = 'home'):
-#     print(error)
-#     flash(error)
-#     if redirect_url is not None:
-#         return redirect(url_for(redirect_url))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])
@@ -130,13 +115,13 @@ def register():
                 form.password.errors.append("Password does not match")
                 error_out = True
 
-                # return show_error("Password does not match", 'register')
             if email is not None and len(email) != 0:
                 user = controller.get_user({'email': email})
                 if user is not None:
                     form.email_address.errors.append("Email already in use")
                     error_out = True
 
+            # display error if needed
             if error_out:
                 return render_template('login/register.html', form=form)
 
@@ -166,34 +151,4 @@ def register():
 # Homepage
 @app.route('/')
 def home():
-
     return render_template('home.html')
-
-
-#
-# @app.route('/password', methods=['GET', 'POST'])
-# @login_required
-# def change_password():
-#     form = ChangePasswordForm()
-#     if form.submit.data and form.validate_on_submit():
-#         if current_user and isinstance(current_user, User):
-#             current_user_id = current_user.id
-#             current_password = form.current_password.data.encode('utf-8')
-#             new_password = form.new_password.data
-#
-#             if not new_password or len(new_password) == 0:
-#                 flash("new password is empty")
-#                 return redirect(url_for('change_password'))
-#
-#             if bcrypt.checkpw(current_password, current_user.pass_hash.encode('utf-8')):
-#                 pass_hash = bcrypt.hashpw(new_password.encode('utf-8'), salt)  # type: ignore
-#                 new_user = db.update_user_password(current_user_id, pass_hash)
-#                 flash("new password saved")
-#                 return redirect(url_for('home'))
-#             else:
-#                 flash("unable to validate old password")
-#         else:
-#             redirect(url_for('login'))
-#
-#         pass
-#     return render_template("change_password.html", form=form)
