@@ -48,7 +48,6 @@ class Database:
 
         return self.conn.cursor(dictionary=True)
 
-
     ## common use cases
     def get_item(self, table_name: str, params: dict[str, Any]):
         sql = f"SELECT * from {table_name} "
@@ -122,8 +121,7 @@ class Database:
         self.conn.commit()
         pass
 
-
-    def update_item(self, table_name: str, item: dict[str, Any], id: int|None = None):
+    def update_item(self, table_name: str, item: dict[str, Any], id: int | None = None):
         id = id or item['id']
         if id is None or id == '':
             return "item id not specified"
@@ -156,16 +154,56 @@ class Database:
         print(f"updated {table_name}, rowcount:{rowcount}, last_id:{last_id}, new_item:{new_item}")
         return new_item
 
-    # specific use cases
-    def create_user(self, params: dict[str, Any]):
-        new_db_user = self.create_item('user', params)
-        print(f"new_db_user: {new_db_user}")
-        return db_user(new_db_user)
 
-    def get_user_by_id(self, id: int|str) -> User|None:
-        id = id if isinstance(id, int) else int(id)
-        db_obj = self.get_item('user', {'id': id})
-        return db_user(db_obj)
-    def get_user(self, params: dict[str, Any]) -> User|None:
-        db_obj = self.get_item('user', params)
-        return db_user(db_obj)
+    # region Users
+    # def create_user(self, params: dict[str, Any]):
+    #     new_db_user = self.create_item('user', params)
+    #     print(f"new_db_user: {new_db_user}")
+    #     return db_user(new_db_user)
+    #
+    # def get_user_by_id(self, id: int | str) -> User | None:
+    #     id = id if isinstance(id, int) else int(id)
+    #     db_obj = self.get_item('user', {'id': id})
+    #     return db_user(db_obj)
+    #
+    # def get_user(self, params: dict[str, Any]) -> User | None:
+    #     db_obj = self.get_item('user', params)
+    #     return db_user(db_obj)
+    # endregion
+
+
+    def get_movie(self, params: dict[str, Any], limit: int|None = None, offset: int|None = None):
+        return self.get_item('movie', params)
+
+    def get_showing_movies(self, limit: int|None = None, offset: int|None = None):
+        sql = '''
+            SELECT
+                m.*,
+                g.name AS genre,
+                MIN(s.start_date_time) AS next_date
+            FROM
+                movie m
+            JOIN
+                movie_genre mg ON m.id = mg.movie_id
+            JOIN
+                genre g ON mg.genre_id = g.id
+            LEFT JOIN
+                screening s ON m.id = s.movie_id
+            WHERE
+                (s.start_date_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 DAY))
+            GROUP BY
+                m.title, m.release_date, g.name
+            ORDER BY next_date ASC 
+        '''
+
+        if limit is not None:
+            sql += f" LIMIT {limit}"
+
+        if offset is not None:
+            sql += f" OFFSET {offset}"
+
+        sql += ';'
+
+        cursor = self.cursor
+        cursor.execute(sql)
+        return cursor.fetchall()

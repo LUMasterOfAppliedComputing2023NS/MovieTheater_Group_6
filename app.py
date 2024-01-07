@@ -10,6 +10,7 @@ from flask import render_template
 from flask_login import LoginManager, login_required, logout_user
 from wtforms.validators import ValidationError
 
+from controller import Controller
 from database.database import Database
 from database.db_credential import DbCredential
 from forms import LoginForm, RegisterForm
@@ -37,13 +38,20 @@ else:
     db_credential = local_credential
 
 db = Database(db_credential)
-
+controller = Controller(db)
 # bcrypt: Bcrypt = Bcrypt(app)
 salt = bcrypt.gensalt()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 # login_manager.login_view = 'login'  # type: ignore
+
+
+
+@login_manager.unauthorized_handler
+def handle_needs_login():
+    flash("You have to be logged in to access this page.")
+    return redirect(url_for('login', next=request.endpoint))
 
 @login_manager.user_loader
 def load_user(user_id: str):
@@ -54,11 +62,11 @@ def load_user(user_id: str):
         return None
 
 
-def show_error(error: str, redirect_url: str|None = 'home'):
-    print(error)
-    flash(error)
-    if redirect_url is not None:
-        return redirect(url_for(redirect_url))
+# def show_error(error: str, redirect_url: str|None = 'home'):
+#     print(error)
+#     flash(error)
+#     if redirect_url is not None:
+#         return redirect(url_for(redirect_url))
 
 @app.route('/logout')
 @login_required
@@ -85,7 +93,7 @@ def login():
                 return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
 
             # Get user by email
-            user = db.get_user({'email': email}) or "unable to find user with given credentials"
+            user = controller.get_user({'email': email}) or "unable to find user with given credentials"
 
             if user and isinstance(user, User) \
                     and password \
@@ -126,7 +134,7 @@ def register():
 
                 # return show_error("Password does not match", 'register')
             if email is not None and len(email) != 0:
-                user = db.get_item('user', {'email': email})
+                user = controller.get_user({'email': email})
                 if user is not None:
                     form.email_address.errors.append("Email already in use")
                     error_out = True
@@ -149,7 +157,7 @@ def register():
                 'is_manager': 0,
             }
 
-            user = db.create_user(user_dict)
+            user = controller.create_user(user_dict)
             flash("You are now registered, logging in...", 'success')
             flask_login.login_user(user, remember=True)
             return redirect(url_for('home'))
@@ -160,97 +168,10 @@ def register():
 # Homepage
 @app.route('/')
 def home():
+
     return render_template('home.html')
 
-#
-# # handles login and registration
-# @app.route('/login', methods=['GET', 'POST'])  # type: ignore
-# def login():
-#     if current_user is not None \
-#             and isinstance(current_user, User) \
-#             and current_user.is_authenticated:
-#         flask_login.login_user(current_user)
-#         return redirect(url_for('home'))
-#
-#     login_form = LoginForm()
-#     register_form = RegisterForm()
-#
-#     def success_login(user: User, remember: bool = False) -> Response:
-#         session['loggedin'] = True
-#         session['id'] = user.id
-#         session['name'] = user.name
-#         flask_login.login_user(user, remember=remember)
-#         print(f"login success: {user}")
-#         return redirect(url_for('home'))
-#
-#     print(f"login_form.errors:{login_form.errors} register_form.errors:{register_form.errors}")
-#     _from = request.args.get('from', None, type=str)
-#
-#     # and login_form.LoginSubmit.data
-#     if _from == 'login' and login_form.validate_on_submit():
-#         email = login_form.EmailAddress.data
-#         user = db.load_user_by_email(email) if email is not None and len(
-#             email) != 0 else "Empty email"
-#         password = login_form.Password.data
-#         error: str | None = None
-#
-#         if user and isinstance(user, User) and password and isinstance(password, str):
-#
-#             if bcrypt.checkpw(
-#                     password.encode('utf-8'), user.pass_hash.encode('utf-8')
-#             ):
-#                 return success_login(user)
-#
-#         error = "Invalid user credentials, please check again"
-#         print(error)
-#         flash(error)
-#     # register_form.RegisterSubmit.data
-#     elif _from == 'register' and register_form.validate_on_submit():
-#         email = register_form.EmailAddress.data
-#         password = register_form.Password.data.encode('utf-8')
-#         user_type = register_form.UserType.data
-#
-#         # check if email in use
-#         if email is None or len(email) == 0:
-#             flash("invalid input")
-#             return
-#
-#         existing_user = db.load_user_by_email(email)
-#         if isinstance(existing_user, User):
-#             flash("email already in use")
-#             return redirect(url_for('login'))
-#
-#         pass_hash = bcrypt.hashpw(password, salt)
-#         user_dict = {
-#             'name': register_form.FullName.data,
-#             'phone_number': register_form.PhoneNumber.data,
-#             'email': email,
-#             'pass_hash': pass_hash,
-#             'address': register_form.Address.data,
-#             'date_joined': date.today()
-#         }
-#
-#         if user_type == 'staff':
-#             user_dict['is_staff'] = 1
-#         elif user_type == 'admin':
-#             user_dict['is_admin'] = 1
-#
-#         new_user = db.create_user(user_dict)
-#         return success_login(new_user)
-#
-#     return render_template(
-#         "login.html",
-#         login_form=login_form,
-#         register_form=register_form
-#     )
-#
-#
-# @app.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for('home'))
-#
+
 #
 # @app.route('/password', methods=['GET', 'POST'])
 # @login_required
