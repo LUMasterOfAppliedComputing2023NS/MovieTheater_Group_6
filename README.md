@@ -2,7 +2,7 @@
 
 
 ### initial database setup
-on the first launch, uncomment the following lines in controller.py to populate initial movie info in the database
+~~on the first launch, uncomment the following lines in controller.py to populate initial movie info in the database~~
 ```
     def __init__(self, db_credential: DbCredential):
         self.db_credential = db_credential
@@ -14,6 +14,9 @@ on the first launch, uncomment the following lines in controller.py to populate 
         # )
         pass
 ```
+
+Or you could just click on the red "reset database" button in the navbar.
+
 
 ###
 To use different database credential for different environment (local vs python anywhere):

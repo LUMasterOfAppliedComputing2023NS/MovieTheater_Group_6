@@ -53,6 +53,12 @@ def load_user(user_id: str):
         return None
 
 
+@app.route('/reset_db')
+def reset_db():
+    logout_user()
+    controller.reset_db(recreate_db=True, load_preset_data=True, load_tmdb_movie=True)
+    return "db reset done"
+
 @app.route('/logout')
 @login_required
 def logout():
