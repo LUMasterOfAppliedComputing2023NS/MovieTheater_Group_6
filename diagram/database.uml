@@ -1,0 +1,101 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class booking {
+   user_id: int(11)
+   created_date_time: datetime
+   status: int(11)
+   screening_id: int(11)
+   price_total: double
+   payment_id: int(11)
+   id: int(11)
+}
+class coupon {
+   code: varchar(255)
+   discount: double
+   expiry_date: datetime
+   is_active: int(11)
+   used_counter: int(11)
+   use_limit: int(11)
+   id: int(11)
+}
+class genre {
+   name: varchar(255)
+   id: int(11)
+}
+class hall {
+   name: varchar(25)
+   number_of_seats: int(11)
+   number_of_columns: int(11)
+   id: int(11)
+}
+class movie {
+   title: varchar(255)
+   original_language: varchar(2)
+   overview: text
+   poster_path: varchar(255)
+   release_date: date
+   duration_min: int(11)
+   id: int(11)
+}
+class movie_genre {
+   movie_id: int(11)
+   genre_id: int(11)
+}
+class payment {
+   user_id: int(11)
+   booking_id: int(11)
+   payment_date_time: datetime
+   payment_method: varchar(25)
+   coupon_id: int(11)
+   amount: double
+   final_amount: double
+   id: int(11)
+}
+class screening {
+   movie_id: int(11)
+   start_date_time: datetime
+   end_date_time: datetime
+   hall_id: int(11)
+   available_seats: int(11)
+   id: int(11)
+}
+class seat {
+   booking_id: int(11)
+   seat_number: int(11)
+   row: int(11)
+   col: int(11)
+   type: int(11)
+   price: double
+   id: int(11)
+}
+class user {
+   first_name: text
+   last_name: text
+   address: text
+   email: text
+   date_of_birth: date
+   date_joined: date
+   pass_hash: text
+   phone_number: text
+   is_staff: int(11)
+   is_admin: int(11)
+   is_manager: int(11)
+   id: int(11)
+}
+
+booking      -[#595959,plain]-^  payment     : "payment_id:id"
+booking      -[#595959,plain]-^  screening   : "screening_id:id"
+booking      -[#595959,plain]-^  user        : "user_id:id"
+movie_genre  -[#595959,plain]-^  genre       : "genre_id:id"
+movie_genre  -[#595959,plain]-^  movie       : "movie_id:id"
+payment      -[#595959,plain]-^  booking     : "booking_id:id"
+payment      -[#595959,plain]-^  coupon      : "coupon_id:id"
+payment      -[#595959,plain]-^  user        : "user_id:id"
+screening    -[#595959,plain]-^  hall        : "hall_id:id"
+screening    -[#595959,plain]-^  movie       : "movie_id:id"
+seat         -[#595959,plain]-^  booking     : "booking_id:id"
+@enduml
