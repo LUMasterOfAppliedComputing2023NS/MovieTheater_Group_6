@@ -8,8 +8,8 @@ class LoginForm(FlaskForm):
     email_address = EmailField("", validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address", "class": "form-control"}, default='test@test.com')
     password = PasswordField("", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password", "class": "form-control"})
     remember_me = BooleanField('Remember Me')
-    login_submit = SubmitField("Login", render_kw={"class": "btn btn-primary px-4", "type": "submit"})
-    pass
+    login_submit = SubmitField("Login", render_kw={"class": "btn submit", "type": "submit"})
+
 
 class RegisterForm(FlaskForm):
 
@@ -23,4 +23,4 @@ class RegisterForm(FlaskForm):
     date_of_birth = DateField("Date of birth:", validators=[], render_kw={"placeholder": "Date of Birth"})
     password = PasswordField("Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password"}, default='password')
     confirm_password = PasswordField("Confirm Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Confirm Password"}, default='password')
-    register_submit = SubmitField("Register", render_kw={"class": "btn btn-primary px-4", "type": "submit"})
+    register_submit = SubmitField("Register", render_kw={"class": "btn submit", "type": "submit"})

@@ -1,154 +1,31 @@
-import os.path
-from datetime import date
-
-import bcrypt
-import flask_login
-from flask import Flask, request, url_for, flash
-from flask import redirect
-from flask import render_template
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, login_required, logout_user
-
-from controller import Controller
-from database.db_credential import DbCredential
-from forms import LoginForm, RegisterForm
-from model.user import User
+from flask import Flask, render_template, redirect, url_for, request
+import config
+from apps import auth
+from apps.contractUs import contractUs_bp
+from apps.gifts import gifts_bp
+from apps.home import home_bp
+from apps.movies import movies_bp
+from apps.promotions import promotions_bp
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
-
-db_credential: DbCredential
-if os.path.exists('db_connection.py'):
-    from db_connection import db_credential as pa_credential
-
-    db_credential = pa_credential
-else:
-    raise Exception(
-        "unable to find db_connection.py, please refer to db_connection.py.example and create one with correct db connection credentials")
-
-controller = Controller(db_credential)
-bcrypt: Bcrypt = Bcrypt(app)
-salt = bcrypt.gensalt()
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'  # type: ignore
-
-
-@login_manager.unauthorized_handler
-def handle_needs_login():
-    flash("You have to be logged in to access this page.")
-    return redirect(url_for('login', next=request.endpoint))
-
-
-@login_manager.user_loader
-def load_user(user_id: str):
-    try:
-        return controller.get_user_by_id(user_id)
-    except:
-        print(f"unable to get user for id:{user_id}, unable to parse as int")
-        return None
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('home'))
-
-
-# Login
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    # Get Form Fields
-    login_form = LoginForm(request.form)
-
-    if request.method == 'POST':
-        # When user clicked on submit from login page
-        if login_form.login_submit.data and login_form.validate_on_submit():
-
-            email = login_form.email_address.data
-            password = login_form.password.data
-            remember_me = login_form.remember_me.data
-
-            if email is None or len(email) == 0:
-                login_form.email_address.errors.append("Email is empty")
-                return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
-
-            # Get user by email
-            user = controller.get_user({'email': email}) or "unable to find user with given credentials"
-
-            if user and isinstance(user, User) \
-                    and password \
-                    and isinstance(password, str) \
-                    and bcrypt.checkpw(password.encode('utf-8'), user.pass_hash.encode('utf-8')):
-                flask_login.login_user(user, remember=remember_me)
-                return redirect(url_for('home'))
-            elif isinstance(user, str):
-                login_form.email_address.errors.append(str)
-            else:
-                login_form.email_address.errors.append("Invalid user credentials, please check again")
-
-    return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm(request.form)
-
-    if request.method == 'POST':
-        # When user clicked on submit from register page
-        if form.is_submitted():
-            error_out = False
-            email = form.email_address.data
-            first_name = form.first_name.data
-            last_name = form.last_name.data
-            phone_number = form.phone_number.data
-            address = form.address.data
-            password = form.password.data.encode('utf-8')
-            confirm_password = form.confirm_password.data.encode('utf-8')
-
-            if form.validate():
-                pass
-
-            if password != confirm_password:
-                form.password.errors.append("Password does not match")
-                error_out = True
-
-            if email is not None and len(email) != 0:
-                user = controller.get_user({'email': email})
-                if user is not None:
-                    form.email_address.errors.append("Email already in use")
-                    error_out = True
-
-            # display error if needed
-            if error_out:
-                return render_template('login/register.html', form=form)
-
-            # create user
-            pass_hash = bcrypt.hashpw(password, salt)
-            user_dict = {
-                'first_name': first_name,
-                'last_name': last_name,
-                'address': address,
-                'email': email,
-                'pass_hash': pass_hash,
-                'phone_number': phone_number,
-                'date_joined': date.today(),
-                'is_staff': 0,
-                'is_admin': 0,
-                'is_manager': 0,
-            }
-
-            user = controller.create_user(user_dict)
-            flash("You are now registered, logging in...", 'success')
-            flask_login.login_user(user, remember=True)
-            return redirect(url_for('home'))
-
-    return render_template('login/register.html', form=form)
+app.config.from_object(config)
+auth.init_app(app)
+app.register_blueprint(home_bp, url_prefix='/home')
+app.register_blueprint(promotions_bp, url_prefix='/promotions')
+app.register_blueprint(movies_bp, url_prefix='/movies')
+app.register_blueprint(gifts_bp, url_prefix='/gifts')
+app.register_blueprint(contractUs_bp, url_prefix='/contractUs')
 
 
 # Homepage
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return redirect(url_for('home.index'))
+
+@app.context_processor
+def inject_globals():
+    return dict(req=request)
+
+
+if __name__ == '__main__':
+    app.run()

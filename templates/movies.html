@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+.date>*{
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.date>*:hover{
+    opacity: .9;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Now Showing</h2>
+        <div></div>
+    </div>
+    <div class="d-flex bg-black text-white flex-column gap-5 flex-wrap p-4">
+        {% for j in range(2) %}
+            <div class="now-showing-item row">
+                <div class="col-12 col-md-2">
+                    <img style="border-radius: 6px;width: 100%" src="/static/upload/1.webp"/>
+                </div>
+                <div class="d-flex gap-1 flex-column col-12 col-md-4">
+                    <h4>Wonka</h4>
+                    <p class="text-secondary" style="font-size: 14px">我们使用大规格block块的A链接进行分页样式呈现，使链接难以忽略、易于扩展，且提供更大的点击区域使用户易于上手。分页是使用list列表元素构建的，因此屏幕阅读器可以读出链接的数量，使用元素将其识别为屏幕阅读器和其它辅助技术的导航组件并提供辅助支持。</p>
+                    <div class="row mt-3 text-secondary">
+                        <div class="col-4">Genre:</div>
+                        <div class="col-8">Action,Adventure,Sci-Fi</div>
+                    </div>
+                    <div class="row text-secondary">
+                        <div class="col-4">RUn Time:</div>
+                        <div class="col-8">duration_min</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <h4>Saturday 16 December</h4>
+                    <div class="row ps-1 pe-1 mt-1 date">
+                        {% for i in range(8) %}
+                            <div class="col-3 p-0">
+                                <div class="m-1 bg-dark pt-1 text-center pb-1">5:00PM</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row col-12 d-flex flex-row align-center justify-content-between p-1">
+        <h2>Coming Soon</h2>
+        <div></div>
+    </div>
+
+    <div class="d-flex bg-black text-white row ms-1 me-1 p-4">
+        {% for i in range(8) %}
+            <div class="col-12 col-sm-6 col-md-3 d-flex gap-1 flex-column align-center" >
+                <img style="border-radius: 6px" src="/static/upload/1.webp">
+                <span class="text-warning text-center mt-1">movietheater</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

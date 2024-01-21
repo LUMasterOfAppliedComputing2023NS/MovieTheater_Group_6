@@ -1,6 +1,47 @@
 {% extends "login/base.html" %}
 
 {% block login_style %}
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+        }
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        h1{
+            line-height: 40px;
+            font-weight: bold;
+        }
+        .content{
+            width: 100%;
+        }
+        input.form-control{
+             border: none;
+            border-radius: 0;
+             border-bottom: 2px solid rgba(0,0,0,.2);
+        }
+
+        input.form-control:focus{
+                color: var(--bs-body-color);
+                background-color: var(--bs-body-bg);
+                border-color: #86b7fe;
+                outline: 0;
+                box-shadow: none;
+        }
+        .submit{
+            color: #fff !important;
+            background-color: #000 !important;
+            border-radius: 0;
+        }
+
+        .submit:hover{
+            opacity: .8;
+        }
+
+    </style>
 {% endblock %}
 
 {% block title %}
@@ -16,67 +57,108 @@ Login
 
 
 <div class="container pt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card-group">
-                <div class="card">
-                    <form method="POST">
-                        <div class="card-body">
-                            <h1>Sign In</h1>
-
-                            {% if login_form.errors %}
-                            <div class="alert alert-danger form-control is-invalid" role="alert">
-                                <ul>
-                                    {% for field, errors in login_form.errors.items() %}
-                                    {% for error in errors %}
-                                    <li>{{ field }}: {{ error }}</li>
-                                    {% endfor %}
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            {% endif %}
-
-                            <p class="text-muted">Sign In to your account</p>
-                            {{ login_form.csrf_token }}
-                            <div class="form-group input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fa fa-solid fa-user"></i></span>
-                                </div>
-                                {{ login_form.email_address.label }} {{ login_form.email_address(size=20) }}
-                            </div>
-                            <div class="input-group mb-4">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fa fa-key"></i></i></span>
-                                </div>
-                                {{ login_form.password.label }} {{ login_form.password(size=20) }}
-                            </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    {{ login_form.remember_me() }} {{ login_form.remember_me.label }}
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    {{ login_form.login_submit() }}
-                                </div>
-                                <div class="col-6 text-right">
-                                    <button class="btn btn-link px-0" type="button">Forgot password?</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+    <div class="row justify-content-center mt-5">
+        <div class="col-12 row">
+            <form action="{{ url_for('auth.login') }}" class="col-6 d-flex flex-column gap-2" style="border-right: 3px solid #000;padding-right: 10%" method="POST">
+                <h1>Hi！</h1>
+                <h1>Sign In</h1>
+                <p>Im waiting for you, please enter your detail</p>
+                {% if login_form.errors %}
+                <div class="alert alert-danger form-control is-invalid" role="alert">
+                    <ul>
+                        {% for field, errors in login_form.errors.items() %}
+                        {% for error in errors %}
+                        <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="card text-white bg-white d-md-down-none" style="width:44%">
-                    <div class="card-body text-center">
-                        <div class="color-bk">
-                            <h2>Sign up</h2>
-                            <a class="btn btn-primary active mt-3" href="{{ register_link }}" type="button">Register Now!</a>
-                        </div>
+                {% endif %}
+
+                <p class="text-muted">Sign In to your account</p>
+                {{ login_form.csrf_token }}
+                <div class="row">
+                    {{ login_form.email_address(size=20) }}
+                </div>
+                <div class="row">
+                    {{ login_form.password(size=20) }}
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        {{ login_form.remember_me() }} {{ login_form.remember_me.label }}
                     </div>
                 </div>
-            </div>
+                <div class="d-flex flex-row-reverse align-center">
+                    <a class="btn btn-link px-0 text-muted" type="button">Forgot password?</a>
+                </div>
+                <div class="row">
+                        {{ login_form.login_submit() }}
+                </div>
+            </form>
+            <form action="{{ url_for('auth.register') }}" class="col-6 d-flex flex-column gap-3" style="padding-left: 10%" method="POST">
+                <h1 style="height: 30px"> </h1>
+                <h1>Register</h1>
+                <p>Let's create an account</p>
+                {{ form.csrf_token }}
+
+                {% if form.errors %}
+                <div class="alert alert-danger form-control is-invalid" role="alert">
+                    <ul>
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col">
+                        {{ form.email_address(class_='form-control') }}
+                    </div>
+                </div>
+
+
+                <div class="d-flex flex-row gap-2">
+
+                    <div class="col">
+                        {{ form.password(class_='form-control') }}
+                    </div>
+
+
+                    <div class="col">
+                        {{ form.confirm_password(class_='form-control') }}
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row gap-2">
+
+                    <div class="col-6">
+                        {{ form.first_name(class_='form-control') }}
+                    </div>
+                    <div class="col-6">
+                        {{ form.last_name(class_='form-control') }}
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row gap-2">
+                    <div class="col">
+                        {{ form.phone_number(class_='form-control') }}
+                    </div>
+                    <div class="col">
+                        {{ form.date_of_birth(class_='form-control') }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">{{ form.address(class_='form-control') }}</div>
+                </div>
+                <div class="row">
+                    {{ form.register_submit() }}
+                </div>
+
+            </form>
         </div>
     </div>
 </div>
@@ -84,5 +166,5 @@ Login
 {% endblock %}
 {% block javascript %}
 
-{% endblock %}"
+{% endblock %}
 

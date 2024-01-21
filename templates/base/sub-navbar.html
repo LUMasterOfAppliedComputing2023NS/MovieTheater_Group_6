@@ -1,0 +1,32 @@
+
+<header class="d-flex flex-row align-center justify-content-between pt-4 p-1">
+    <form style="display: flex;height: 50px;border-radius: 999px;padding: 4px;gap: 10px;background-color: #fdfdfd">
+        {% if show_search %}
+            <div style="background-color: #7e528a;font-size: 20px;color: #fff;height: 42px;width: 42px;border-radius: 50%;display: flex;align-items: center;justify-content: center">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <input style="border: none;outline: none;font-size: 20px;border-radius: 999px;" placeholder="Explore movies..." />
+        {% endif %}
+    </form>
+    <div>
+        {% if current_user and current_user.is_authenticated %}
+            <div class="btn-group mx-3">
+                <button type="button" style="background-color: #7e528a;color: #fff;border-radius: 999px;padding: 10px 30px" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    {{ current_user.first_name }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item btn btn-danger" style="background-color: #FF0000;" href="#">Reset database</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a class="btn" style="background-color: #7e528a;color: #fff;border-radius: 999px;padding: 10px 30px" type="submit" href="{{ url_for('auth.login') }}">Login</a>
+        {% endif %}
+    </div>
+</header>
+
