@@ -1,7 +1,12 @@
-DROP DATABASE IF EXISTS movietheater;
+-- DROP DATABASE IF EXISTS movietheater;
+-- CREATE DATABASE IF NOT EXISTS movietheater;
+-- USE movietheater;
 
-CREATE DATABASE IF NOT EXISTS movietheater;
-USE movietheater;
+
+DROP DATABASE IF EXISTS yana00918$movietheater2;
+CREATE DATABASE IF NOT EXISTS yana00918$movietheater2;
+USE yana00918$movietheater2;
+
 
 CREATE TABLE IF NOT EXISTS user (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
