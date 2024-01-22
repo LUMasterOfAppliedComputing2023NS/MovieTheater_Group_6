@@ -21,6 +21,6 @@ class RegisterForm(FlaskForm):
     #     "customer", "customer"), ("staff", "staff"), ("admin", "admin")])
     address = StringField("Address:", validators=[], render_kw={"placeholder": "Address"})
     date_of_birth = DateField("Date of birth:", validators=[], render_kw={"placeholder": "Date of Birth"})
-    password = PasswordField("Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password"}, default='password')
+    password = PasswordField("Password:", validators=[InputRequired(), Length(min=8, max=50)], render_kw={"placeholder": "Password"}, default='password')
     confirm_password = PasswordField("Confirm Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Confirm Password"}, default='password')
     register_submit = SubmitField("Register", render_kw={"class": "btn submit", "type": "submit"})
