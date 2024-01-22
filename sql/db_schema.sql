@@ -97,7 +97,6 @@ create table seat
     id              int auto_increment,
     hall_id         int           not null,
     seat_id_in_hall int           not null,
-    row             int           not null,
     col             int           not null,
     type            int default 0 not null,
     price           double        not null,
