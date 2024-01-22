@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash
 
 from . import get_session
 
+
 def value_format(v):
     if isinstance(v, str):
         return f'"{v}"'
@@ -249,6 +250,33 @@ class User(BaseModel):
     def is_anonymous(self):
         return False
 
+if User.get_any(where="email = 'admin@test.com'").__len__() == 0:
+    User.create(
+        first_name='test',
+        last_name='admin',
+        email='admin@test.com',
+        pass_hash=generate_password_hash('admin_pass'),
+        is_admin=True,
+        phone_number='12334567'
+    )
+if User.get_any(where="email = 'staff@test.com'").__len__() == 0:
+    User.create(
+        first_name='test',
+        last_name='staff',
+        email='staff@test.com',
+        pass_hash=generate_password_hash('staff_pass'),
+        is_staff=True,
+        phone_number='1233456'
+    )
+if User.get_any(where="email = 'manager@test.com'").__len__() == 0:
+    User.create(
+        first_name='test',
+        last_name='manager',
+        email='manager@test.com',
+        pass_hash=generate_password_hash('staff_pass'),
+        is_manager=True,
+        phone_number='123345678'
+    )
 
 class GiftCardLog(BaseModel):
 
