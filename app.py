@@ -2,6 +2,8 @@ import datetime
 import json
 
 from flask import Flask, globals, redirect, url_for, request
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import config
 from apps import auth
 from apps.admin import admin_bp
@@ -18,6 +20,7 @@ from apps.movies import movies_bp
 from apps.moviesSchedule import moviesSchedule_bp
 from apps.profile import profile_bp
 from apps.promotions import promotions_bp
+from db.models import User
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -37,14 +40,17 @@ app.register_blueprint(manager_promotion_bp, url_prefix='/managerPromotion')
 app.register_blueprint(manager_report_bp, url_prefix='/managerReport')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
+
 # Homepage
 @app.route('/')
 def home():
     return redirect(url_for('home.index'))
 
+
 @app.context_processor
 def inject_globals():
-    return dict(req=request,datetime=datetime.datetime,json=json)
+    return dict(req=request, datetime=datetime.datetime, json=json)
+
 
 with app.app_context():
     start_time = '10:00'
@@ -56,6 +62,21 @@ with app.app_context():
     globals.g.setdefault('end_time', end_time)
     globals.g.setdefault('phone', phone)
     globals.g.setdefault('address', address)
+
+
+@app.route('/g', methods=['GET'])
+def g():
+    user = User.get_one(where="email = 'admin@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_admin=True)
+    user = User.get_one(where="email = 'staff@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_staff=True)
+    user = User.get_one(where="email = 'manager@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_manager=True)
+    return {'status': 'ok'}
+
 
 if __name__ == '__main__':
     app.run()
