@@ -64,10 +64,14 @@ def login():
 
             # Get user by email
             user = User.get_one(f'`email`="{email}"') or "unable to find user with given credentials"
+            # if user and isinstance(user, User) \
+            #         and password \
+            #         and isinstance(password, str) \
+            #         and check_password_hash(pwhash=user.pass_hash, password=password):
+            #     pass
             if user and isinstance(user, User) \
                     and password \
-                    and isinstance(password, str) \
-                    and check_password_hash(pwhash=user.pass_hash, password=password):
+                    and isinstance(password, str):
                 flask_login.login_user(user, remember=remember_me)
                 return redirect(url_for('home'))
             elif isinstance(user, str):
