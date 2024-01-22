@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Movies</h2>
+        <div></div>
+    </div>
+    <div class="row m-1">
+        <!-- Modal Trigger -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+          Create Screening
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Screening</h5>
+                <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="{{ url_for('manager_movie.screening') }}" method="post" id="createForm">
+                  <input type="hidden" class="form-control" name="movie_id" value="{{ movie.id }}" required>
+                  <div class="form-group">
+                    <label for="startDateTime">Start Date & Time</label>
+                    <input type="datetime-local" name="start_date_time" class="form-control" id="startDateTime" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="endDateTime">End Date & Time</label>
+                    <input type="datetime-local" name="end_date_time" class="form-control" id="endDateTime" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="hallId">Hall ID</label>
+                      <select class="form-control" name="hall_id" required>
+                          {% for i in hall %}
+                            <option value="{{ i.id }}" >{{ i.name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="adultPrice">Adult Price</label>
+                    <input type="number" name="adult_price" class="form-control" id="adultPrice">
+                  </div>
+                  <div class="form-group">
+                    <label for="childPrice">Child Price</label>
+                    <input type="number" name="child_price" class="form-control" id="childPrice">
+                  </div>
+                  <div class="form-group">
+                    <label for="studentPrice">Student Price</label>
+                    <input type="number" name="student_price" class="form-control" id="studentPrice">
+                  </div>
+                  <div class="form-group">
+                    <label for="seniorPrice">Senior Price</label>
+                    <input type="number" name="senior_price" class="form-control" id="seniorPrice">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="$('#createForm').submit()" class="btn btn-primary" id="submitBtn">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card w-100" style="width: 18rem;">
+          <div class="card-body w-100 d-flex flex-column">
+              <span><b>title:</b> {{ movie.title }}</span>
+              <span><b>Original Language:</b> {{ movie.original_language }}</span>
+              <span><b>Text:</b> {{ movie.overview }}</span>
+              <span><b>Poster:</b> {{ movie.poster_path }}</span>
+              <span><b>Release Date:</b> {{ movie.release_date }}</span>
+              <span><b>Duration Min:</b> {{ movie.duration_min }}</span>
+          </div>
+            <div class="card-footer">
+                {% include 'components/create_or_update_movie_form.html' %}
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Start Date Time</th>
+          <th scope="col">End Date Time</th>
+          <th scope="col">Available Seats</th>
+          <th scope="col">Adult Price</th>
+          <th scope="col">Child Price</th>
+          <th scope="col">Student Price</th>
+          <th scope="col">Senior Price</th>
+          <th scope="col">Hall Name</th>
+            <th scope="col">Option</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in movie.screenings %}
+            <tr>
+              <th scope="row">{{ i.start_date_time }}</th>
+              <td>{{ i.end_date_time }}</td>
+              <td>{{ i.available_seats }}</td>
+              <td>{{ i.adult_price }}</td>
+              <td>{{ i.child_price }}</td>
+              <td>{{ i.student_price }}</td>
+              <td>{{ i.senior_price }}</td>
+              <td>{{ i.get_hall.name }}</td>
+                <td>
+                    <a class="btn btn-danger" href="{{ url_for('manager_movie.screen_delete', sid=i.id) }}">delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

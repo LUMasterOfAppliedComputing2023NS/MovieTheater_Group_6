@@ -1,0 +1,138 @@
+<button type="button" class="btn btn-primary" id="createAccountModalBtn" data-toggle="modal" data-target="#createAccountModal">
+{% if not form %}
+create
+{% else %}
+update
+{% endif %}
+</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createAccountLabel">
+            {% if form %}
+                update
+            {% else %}
+                create
+            {% endif %}
+            Movie
+        </h5>
+        <div></div>
+      </div>
+      <div class="modal-body">
+        <form id="create_account_form" class="d-flex flex-column gap-2" method="post" action="{{ url_for('manager_movie.update_movie') }}">
+            {% if form %}
+                <input name="id" type="hidden" value="{{ form.id }}" />
+            {% endif %}
+             <div class="form-group">
+                <label for="title">Title</label>
+                <input required type="text" class="form-control" value="{{ form.title }}" name="title" id="title" placeholder="Title">
+              </div>
+            <div class="form-group">
+                <label for="original_language">Original Language</label>
+                <input required type="text" class="form-control" name="original_language" value="{{ form.original_language }}" id="original_language" placeholder="Original Language">
+              </div>
+            <div class="form-group">
+                <label for="overview">Overview</label>
+                <input required type="text" class="form-control" name="overview" value="{{ form.overview }}" id="overview" placeholder="Overview">
+              </div>
+            <div class="form-group">
+                <label for="poster_path">Poster Path</label>
+                <input required type="text" class="form-control" name="poster_path" value="{{ form.poster_path }}" id="poster_path" placeholder="Poster Path">
+              </div>
+            <div class="form-group">
+                <label for="release_date">Release Date</label>
+                <input required type="date" class="form-control" name="release_date" value="{{ form.release_date }}" id="release_date" placeholder="Release Date">
+              </div>
+            <div class="form-group">
+                <label for="duration_min">Duration Min</label>
+                <input required type="number" class="form-control" name="duration_min" value="{{ form.duration_min }}" id="duration_min" placeholder="Duration Min">
+              </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="closeCreateAccountModalBtn" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="create_account_submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(()=>{
+        const modal = $('#createAccountModal')
+       $("#createAccountModalBtn").click(function(e){
+            modal.modal('show')
+        });
+        $("#closeCreateAccountModalBtn").click(function(e){
+            modal.modal('hide')
+        });
+        const form = $('#create_account_form')
+        $('#create_account_submit').click(function (e){
+            form[0].submit()
+        })
+
+        form.bootstrapValidator({
+            　message: 'This value is not valid',
+            　feedbackIcons: {
+        　　　　　　　　valid: 'fa-regular fa-circle-info text-success',
+        　　　　　　　　invalid: 'fa-regular fa-circle-exclamation text-danger',
+        　　　　　　　　validating: 'fa-regular fa-circle-exclamation text-warning'
+　　　　　　　　   },
+            fields:{
+              title: {
+                validators: {
+                    notEmpty: {
+                        message: 'password not empty'
+                    }
+                }
+              },
+              original_language: {
+                validators: {
+                    notEmpty: {
+                        message: 'original language not empty'
+                    },
+                    stringLength: {
+                        min: 2,
+                        max: 2,
+                        message: 'original language length 2'
+                    },
+                }
+              },
+              overview: {
+                validators: {
+                    notEmpty: {
+                        message: 'overview not empty'
+                    },
+                }
+              },
+              poster_path: {
+                validators: {
+                    notEmpty: {
+                        message: 'poster path not empty'
+                    },
+                }
+              },
+              release_date: {
+                validators: {
+                    notEmpty: {
+                        message: 'release date not empty'
+                    },
+                }
+              },
+              duration_min: {
+                validators: {
+                    notEmpty: {
+                        message: 'duration min not empty'
+                    },
+                }
+              }
+            },
+
+        });
+
+    })
+</script>

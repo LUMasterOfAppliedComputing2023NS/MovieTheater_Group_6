@@ -24,7 +24,7 @@
         {% for i in coupon %}
             <div class="row item shadow p-2" style="border-radius: 5px">
                 <div class="col-lg-3 col-sm-6 d-flex align-center justify-content-center">
-                    <h4 class="m-auto">{{ i.title }}</h4>
+                    <h4 class="m-auto">{{ i.title }} (residue:{{ i.use_limit - i.used_counter }})</h4>
                 </div>
                 <div class="col-lg-6 col-sm-6 text-secondary"><p class="m-0">{{ i.remark }}</p></div>
                 <div class="col-lg-2 col-sm-6 d-flex align-center justify-content-end">

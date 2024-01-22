@@ -1,6 +1,9 @@
 from datetime import date
+from io import BytesIO
+from captcha.image import ImageCaptcha
+import random, string
 import flask_login
-from flask import Blueprint, redirect, url_for, request, flash, Flask, render_template
+from flask import Blueprint, redirect, url_for, request, flash, Flask, render_template, make_response, session
 from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -17,6 +20,22 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+@auth_bp.route('/verify-code/')
+def verify_code():
+    captcha = random.choices('0123456789',k=4)
+    img = ImageCaptcha()
+    image = img.generate_image(chars=captcha)
+    session['code'] = ''.join(captcha)
+    # with open('captcha.png','wb') as fp:
+    #     image.save(fp,"png")
+    out = BytesIO()
+    image.save(out, 'png')
+    # 把out的文件指针指向最开始的位置
+    out.seek(0)
+    resp = make_response(out.read())
+    resp.content_type = 'image/png'
+    return resp
+
 
 # Login
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -26,6 +45,12 @@ def login():
     register_form = RegisterForm(request.form)
 
     if request.method == 'POST':
+        v_code = request.form['code']
+        print(v_code,session.get('code',"<>"))
+        if v_code != session.get('code',"<>"):
+            flash('verification code incorrect')
+            return render_template('login/login.html', login_form=login_form, form=register_form)
+
         # When user clicked on submit from login page
         if login_form.login_submit.data and login_form.validate_on_submit():
 
@@ -34,8 +59,8 @@ def login():
             remember_me = login_form.remember_me.data
 
             if email is None or len(email) == 0:
-                login_form.email_address.errors.append("Email is empty")
-                return render_template('login/login.html', login_form=login_form, register_link=url_for('register'))
+                flash("Email is empty")
+                return render_template('login/login.html', login_form=login_form, form=register_form)
 
             # Get user by email
             user = User.get_one(f'`email`="{email}"') or "unable to find user with given credentials"
@@ -46,17 +71,22 @@ def login():
                 flask_login.login_user(user, remember=remember_me)
                 return redirect(url_for('home'))
             elif isinstance(user, str):
-                login_form.email_address.errors.append(user)
+                flash(user)
             else:
-                login_form.email_address.errors.append("Invalid user credentials, please check again")
+                flash("password error")
     return render_template('login/login.html', login_form=login_form, form=register_form)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
-
+    login_form = LoginForm()
     if request.method == 'POST':
+        v_code = request.form['code']
+        if v_code != session.get('code',"<>"):
+            flash('verification code incorrect')
+            return render_template('login/login.html', login_form=login_form,form=form)
+
         # When user clicked on submit from register page
         if form.is_submitted():
             error_out = False
@@ -72,18 +102,17 @@ def register():
                 pass
 
             if password != confirm_password:
-                form.password.errors.append("Password does not match")
+                flash("Password does not match")
                 error_out = True
 
             if email is not None and len(email) != 0:
                 user = User.get_one(f'`email`="{email}"')
                 if user is not None:
-                    form.email_address.errors.append("Email already in use")
-                    error_out = True
+                    flash("Email already in use")
 
             # display error if needed
             if error_out:
-                return render_template('login/register.html', form=form)
+                return render_template('login/login.html',login_form=login_form, form=form)
 
             # create user
             pass_hash = generate_password_hash(password.decode('utf-8'))
@@ -121,7 +150,8 @@ def init_app(app: Flask):
     def load_user(user_id: str):
         try:
             return User.get_by_id(user_id)
-        except:
+        except Exception as e:
+            print(e)
             print(f"unable to get user for id:{user_id}, unable to parse as int")
             return None
 

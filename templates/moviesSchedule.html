@@ -25,9 +25,9 @@
         {% for i in movies %}
             <div class="now-showing-item row">
                 <div class="col-12 col-md-2">
-                    <img style="border-radius: 6px" src="{{ i.poster_path }}"/>
+                    <img style="border-radius: 6px;width: 100%" src="{{ i.poster_path }}"/>
                 </div>
-                <div class="d-flex gap-1 ps-5 flex-column col-12 col-md-4">
+                <div class="d-flex gap-1 flex-column col-12 col-md-4">
                     <h4>Wonka</h4>
                     <p class="text-secondary" style="font-size: 14px">{{ i.overview }}</p>
                     <div class="row mt-3 text-secondary">
@@ -40,12 +40,12 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <h4>{{ datetime.now().strftime('%Y-%m-%d') }}</h4>
+                    <h4>{{ datetime.now() }}</h4>
                     <div class="row ps-1 pe-1 mt-1 date">
                         {% for j in i.now_screenings %}
                             <div class="col-3 p-0">
                                 <div class="m-1 pt-1 bg-dark d-flex align-items-center justify-content-center pb-1">
-                                    <a href="{{ url_for('movies.detail',movie_id=i.id) }}?date={{ j.start_date_time.strftime('%Y-%m-%d') }}&sid={{ j.id }}" class="text-white text-decoration-none text-center">{{ j.start_date_time.strftime('%H:%M') }}</a>
+                                    <div class="text-white text-decoration-none text-center">{{ j.start_date_time.strftime('%H:%M') }}</div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -62,9 +62,9 @@
     <div class="d-flex bg-black text-white row ms-1 me-1 p-4">
         {% for i in soon %}
             <div class="col-12 mt-2 col-sm-6 col-md-3 d-flex gap-1 flex-column align-center" >
-                <a href="{{ url_for('movies.detail',movie_id=i.id) }}">
+                <div>
                     <img style="border-radius: 6px;width: 100%" src="{{ i.poster_path }}">
-                </a>
+                </div>
                 <span class="text-warning text-center mt-1">{{ i.title }}</span>
             </div>
         {% endfor %}

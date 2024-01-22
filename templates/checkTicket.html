@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+.item{
+    cursor: pointer;
+}
+.item:hover{
+    opacity: .9;
+}
+.seat{
+    cursor: pointer;
+}
+.seat:hover{
+    opacity: .9;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Check Ticket</h2>
+        <div></div>
+    </div>
+    <div class="d-flex flex-column gap-1 bg-black text-white p-4">
+        <div class="row mt-4 ps-3 pe-3 flex-wrap">
+            {% for i in screenings %}
+                <a href="{{ url_for('checkTicket.index') }}?sid={{ i.id }}" class="text-decoration-none text-white col-12 p-1 col-sm-6 col-md-4">
+                    <div class="w-100 p-1 item " style="border-left:4px solid rgb(var({% if i.id ==  select_screening.id %}--bs-success-rgb{% else %}--bs-danger-rgb{% endif %}));background-color: #2c2c2c;border-radius: 6px">
+                        <div style="font-weight: bold" class="m-0 mt-1 d-flex align-center justify-content-between"><h5>{{ i.start_date_time.strftime('%H:%M') }}</h5> <span class="text-secondary">NFT</span></div>
+                        <h6 class="m-0 mb-1" style="font-weight: bold">STANDARD</h6>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        {% if select_screening %}
+            <h3 class="mt-1 mb-1">Choose your seats</h3>
+            <div class="d-flex align-center justify-content-center">
+                <span class="text-secondary">SCREEN</span>
+            </div>
+            <div class="m-auto col-12 col-sm-10 col-md-8">
+                <div class="m-auto col-12 col-sm-10 col-md-8">
+                    {% for i in range(hall.number_of_columns) %}
+                        <div class="row">
+                            <span class="col">{{ i + 1 }}</span>
+                            {% for j in range(hall.number_of_seats // hall.number_of_columns) %}
+                                <i col="{{ i }}" row="{{ j }}" class="fa-solid p-1 text-center seat col  {% if i.__str__()+'-'+j.__str__() in booking_seats %}fa-square-check text-secondary{% else %}fa-block text-white{% endif %} {% if i.__str__()+'-'+j.__str__() in ticket_seats %}text-success{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">status</th>
+                  <th scope="col">seats (col-row)</th>
+                  <th scope="col">price total</th>
+                  <th scope="col">Option</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in bookings %}
+                    <tr>
+                      <th scope="row">{% if i.status %}ticketed{% else %}not ticket{% endif %}</th>
+                      <td>{{ ','.join(json.loads(i.seats)) }}</td>
+                      <td>{{ i.price_total }}</td>
+                      <td>
+                          {% if i.status %}
+                          {% else %}
+                              <a href='{{ url_for('checkTicket.ticket',bid=i.id) }}' class="btn-link text-danger btn-primary">ticket</a>
+                          {% endif %}
+                      </td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

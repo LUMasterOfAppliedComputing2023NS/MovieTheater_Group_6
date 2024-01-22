@@ -1,10 +1,22 @@
-from flask import Flask, render_template, redirect, url_for, request
+import datetime
+import json
+
+from flask import Flask, globals, redirect, url_for, request
 import config
 from apps import auth
+from apps.admin import admin_bp
+from apps.bookings import bookings_bp
+from apps.checkTicket import checkTicket_bp
 from apps.contractUs import contractUs_bp
 from apps.gifts import gifts_bp
 from apps.home import home_bp
+from apps.manager.movie import manager_movie_bp
+from apps.manager.promotion import manager_promotion_bp
+from apps.manager.report import manager_report_bp
+from apps.manager.staff import manager_staff_bp
 from apps.movies import movies_bp
+from apps.moviesSchedule import moviesSchedule_bp
+from apps.profile import profile_bp
 from apps.promotions import promotions_bp
 
 app = Flask(__name__)
@@ -15,7 +27,15 @@ app.register_blueprint(promotions_bp, url_prefix='/promotions')
 app.register_blueprint(movies_bp, url_prefix='/movies')
 app.register_blueprint(gifts_bp, url_prefix='/gifts')
 app.register_blueprint(contractUs_bp, url_prefix='/contractUs')
-
+app.register_blueprint(bookings_bp, url_prefix='/bookings')
+app.register_blueprint(profile_bp, url_prefix='/profile')
+app.register_blueprint(checkTicket_bp, url_prefix='/checkTicket')
+app.register_blueprint(moviesSchedule_bp, url_prefix='/moviesSchedule')
+app.register_blueprint(manager_movie_bp, url_prefix='/managerMovies')
+app.register_blueprint(manager_staff_bp, url_prefix='/managerStaff')
+app.register_blueprint(manager_promotion_bp, url_prefix='/managerPromotion')
+app.register_blueprint(manager_report_bp, url_prefix='/managerReport')
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # Homepage
 @app.route('/')
@@ -24,8 +44,18 @@ def home():
 
 @app.context_processor
 def inject_globals():
-    return dict(req=request)
+    return dict(req=request,datetime=datetime.datetime,json=json)
 
+with app.app_context():
+    start_time = '10:00'
+    end_time = '22.00'
+    phone = '00000000'
+    address = 'aaa bbb ccc'
+
+    globals.g.setdefault('start_time', start_time)
+    globals.g.setdefault('end_time', end_time)
+    globals.g.setdefault('phone', phone)
+    globals.g.setdefault('address', address)
 
 if __name__ == '__main__':
     app.run()

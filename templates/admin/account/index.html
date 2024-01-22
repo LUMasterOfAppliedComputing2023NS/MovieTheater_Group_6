@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Account</h2>
+        <div></div>
+    </div>
+
+    <div class="row ">
+        <a href="{{ url_for('admin.account_customer') }}" class="row col-12 col-sm-4 btn-link">
+            <img class="col-12" src="{{ url_for('static',filename='customer.png') }}" />
+            <h2 class="col-12 text-center">Customer</h2>
+        </a>
+        <a href="{{ url_for('admin.account_staff') }}" class="row col-12 col-sm-4 btn-link">
+            <img class="col-12" src="{{ url_for('static',filename='staff.png') }}" />
+            <h2 class="col-12 text-center">Staff</h2>
+        </a>
+        <a href="{{ url_for('admin.account_manager') }}" class="row col-12 col-sm-4 btn-link">
+            <img class="col-12" src="{{ url_for('static',filename='manager.png') }}" />
+            <h2 class="col-12 text-center">Manager</h2>
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

@@ -1,0 +1,152 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" id="createAccountModalBtn" data-toggle="modal" data-target="#createAccountModal">
+  create
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createAccountLabel">
+            {% if 'staff' in req.url_rule.rule %}
+                Staff
+            {% elif 'manager' in req.url_rule.rule %}
+                Manager
+            {% else %}
+                Customer
+            {% endif %}
+        </h5>
+        <div></div>
+      </div>
+      <div class="modal-body">
+        <form id="create_account_form" class="d-flex flex-column gap-2" method="post" action="{{ url_for('admin.create_account') }}">
+            {% if 'staff' in req.url_rule.rule %}
+                <input type="hidden" name="is_staff" value="1" />
+            {% elif 'manager' in req.url_rule.rule %}
+                <input type="hidden" name="is_manager" value="1" />
+            {% else %}
+            {% endif %}
+             <div class="form-group">
+                <label for="phone_number">Phone Number</label>
+                <input required type="number" class="form-control" name="phone_number" id="phone_number" placeholder="Phone Number">
+              </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input required type="text" class="form-control" name="password" id="password" placeholder="Password">
+              </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input required type="email" class="form-control" name="email" id="email" placeholder="Email">
+              </div>
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input required type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
+              </div>
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input required type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
+              </div>
+            <div class="form-group">
+                <label for="last_name">Address</label>
+                <input required type="text" class="form-control" name="address" id="address" placeholder="Address">
+              </div>
+            <div class="form-group">
+                <label for="date_of_birth">Date Of Birth</label>
+                <input required type="date" class="form-control" name="date_of_birth" id="date_of_birth" placeholder="Date Of Birth">
+           </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="closeCreateAccountModalBtn" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="create_account_submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(()=>{
+        const modal = $('#createAccountModal')
+       $("#createAccountModalBtn").click(function(e){
+            modal.modal('show')
+        });
+        $("#closeCreateAccountModalBtn").click(function(e){
+            modal.modal('hide')
+        });
+        const form = $('#create_account_form')
+        $('#create_account_submit').click(function (e){
+            form[0].submit()
+        })
+
+        form.bootstrapValidator({
+            　message: 'This value is not valid',
+            　feedbackIcons: {
+        　　　　　　　　valid: 'fa-regular fa-circle-info text-success',
+        　　　　　　　　invalid: 'fa-regular fa-circle-exclamation text-danger',
+        　　　　　　　　validating: 'fa-regular fa-circle-exclamation text-warning'
+　　　　　　　　   },
+            fields:{
+              phone_number: {
+                validators: {
+                    notEmpty: {
+                        message: 'email not empty'
+                    },
+                }
+              },
+              password: {
+                validators: {
+                    notEmpty: {
+                        message: 'password not empty'
+                    },
+                    stringLength: {
+                        min: 6,
+                        max: 18,
+                        message: 'password length 6 to 18'
+                    },
+                }
+              },
+              email: {
+                validators: {
+                    notEmpty: {
+                        message: 'email not empty'
+                    },
+                    emailAddress: {
+                        message: 'email format fail'
+                    }
+                }
+              },
+              first_name: {
+                validators: {
+                    notEmpty: {
+                        message: 'first name not empty'
+                    },
+                }
+              },
+              last_name: {
+                validators: {
+                    notEmpty: {
+                        message: 'last name not empty'
+                    },
+                }
+              },
+              address: {
+                validators: {
+                    notEmpty: {
+                        message: 'address not empty'
+                    },
+                }
+              },
+              date_for_birth: {
+                validators: {
+                    notEmpty: {
+                        message: 'date for birth not empty'
+                    },
+                }
+              }
+            },
+
+        });
+
+    })
+</script>

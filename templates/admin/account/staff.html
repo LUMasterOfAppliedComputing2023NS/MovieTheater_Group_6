@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Staff</h2>
+        <div></div>
+    </div>
+    <div>
+        {% include 'components/create_account_form.html' %}
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Staff Number</th>
+          <th scope="col">Full Name</th>
+          <th scope="col">Phone Number</th>
+            <th scope="col">Email</th>
+          <th scope="col">Address</th>
+            <th scope="col">Date Joined</th>
+          <th scope="col">Option</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for i in staffs %}
+              <tr>
+                  <th scope="row">{{ i.id }}</th>
+                  <td>{{ i.first_name }} {{ i.last_name }}</td>
+                  <td>{{ i.phone_number }}</td>
+                  <td>{{ i.email }}</td>
+                  <td>{{ i.address }}</td>
+                  <td>{{ i.date_joined }}</td>
+                  <td>
+                      <a class="btn-link btn-success">detail</a>
+                  </td>
+                </tr>
+          {% endfor %}
+
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

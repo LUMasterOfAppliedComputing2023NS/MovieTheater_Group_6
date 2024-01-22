@@ -9,7 +9,8 @@ conn = mysql.connector.connect(
     host=config.db_host,
     database=config.db_name,
     port=config.db_port,
-    autocommit=True
+    autocommit=True,
+    buffered=True
 )
 
 

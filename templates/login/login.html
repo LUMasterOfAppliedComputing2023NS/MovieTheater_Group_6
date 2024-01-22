@@ -83,7 +83,10 @@ Login
                 <div class="row">
                     {{ login_form.password(size=20) }}
                 </div>
-
+                <div class="row">
+                    <img style="width: 180px" src="{{ url_for('auth.verify_code') }}" />
+                    <input name="code" class="form-control col" placeholder="verify code" />
+                </div>
                 <div class="row">
                     <div class="col">
                         {{ login_form.remember_me() }} {{ login_form.remember_me.label }}
@@ -153,6 +156,10 @@ Login
                 </div>
                 <div class="row">
                     <div class="col">{{ form.address(class_='form-control') }}</div>
+                </div>
+                <div class="row">
+                    <img style="width: 180px" src="{{ url_for('auth.verify_code') }}" />
+                    <input name="code" class="form-control col" placeholder="verify code" />
                 </div>
                 <div class="row">
                     {{ form.register_submit() }}
