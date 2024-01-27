@@ -1,17 +1,18 @@
 
 <header class="d-flex flex-row align-center justify-content-between pt-4 p-1">
-    {% if show_search %}
-        <form style="display: flex;height: 50px;border-radius: 999px;padding: 4px;gap: 10px;background-color: #fdfdfd">
-
-                <div style="background-color: #7e528a;font-size: 20px;color: #fff;height: 42px;width: 42px;border-radius: 50%;display: flex;align-items: center;justify-content: center">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
-                <input style="border: none;outline: none;font-size: 20px;border-radius: 999px;" placeholder="Explore movies..." />
-
-        </form>
-    {% else %}
-        <div></div>
-    {% endif %}
+{#    {% if show_search %}#}
+{#        <form style="display: flex;height: 50px;border-radius: 999px;padding: 4px;gap: 10px;background-color: #fdfdfd">#}
+{##}
+{#                <div style="background-color: #7e528a;font-size: 20px;color: #fff;height: 42px;width: 42px;border-radius: 50%;display: flex;align-items: center;justify-content: center">#}
+{#                    <i class="fa-solid fa-magnifying-glass"></i>#}
+{#                </div>#}
+{#                <input style="border: none;outline: none;font-size: 20px;border-radius: 999px;" placeholder="Explore movies..." />#}
+{##}
+{#        </form>#}
+{#    {% else %}#}
+{#        <div></div>#}
+{#    {% endif %}#}
+<div></div>
     <div>
         {% if current_user and current_user.is_authenticated %}
             <div class="btn-group mx-3">

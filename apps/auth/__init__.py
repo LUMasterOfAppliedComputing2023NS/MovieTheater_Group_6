@@ -63,15 +63,11 @@ def login():
                 return render_template('login/login.html', login_form=login_form, form=register_form)
 
             # Get user by email
-            user = User.get_one(f'`email`="{email}"') or "unable to find user with given credentials"
-            # if user and isinstance(user, User) \
-            #         and password \
-            #         and isinstance(password, str) \
-            #         and check_password_hash(pwhash=user.pass_hash, password=password):
-            #     pass
+            user = User.get_one(where=f'`email`="{email}"') or "unable to find user with given credentials"
             if user and isinstance(user, User) \
                     and password \
-                    and isinstance(password, str):
+                    and isinstance(password, str) \
+                    and check_password_hash(pwhash=user.pass_hash, password=password):
                 flask_login.login_user(user, remember=remember_me)
                 return redirect(url_for('home'))
             elif isinstance(user, str):
@@ -99,8 +95,8 @@ def register():
             last_name = form.last_name.data
             phone_number = form.phone_number.data
             address = form.address.data
-            password = form.password.data.encode('utf-8')
-            confirm_password = form.confirm_password.data.encode('utf-8')
+            password = form.password.data
+            confirm_password = form.confirm_password.data
 
             if form.validate():
                 pass
@@ -119,7 +115,8 @@ def register():
                 return render_template('login/login.html',login_form=login_form, form=form)
 
             # create user
-            pass_hash = generate_password_hash(password.decode('utf-8'))
+
+            pass_hash = generate_password_hash(password)
             user_dict = {
                 'first_name': first_name,
                 'last_name': last_name,

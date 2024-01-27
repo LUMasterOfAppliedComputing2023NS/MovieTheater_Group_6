@@ -5,8 +5,8 @@ from wtforms.validators import InputRequired, Email, Length, DataRequired
 from wtforms.fields import TelField, EmailField
 
 class LoginForm(FlaskForm):
-    email_address = EmailField("", validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address", "class": "form-control"}, default='test@test.com')
-    password = PasswordField("", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password", "class": "form-control"})
+    email_address = EmailField("Email", validators=[InputRequired(), Email()], render_kw={"placeholder": "Email Address", "class": "form-control"}, default='test@test.com')
+    password = PasswordField("Password", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Password", "class": "form-control"})
     remember_me = BooleanField('Remember Me')
     login_submit = SubmitField("Login", render_kw={"class": "btn submit", "type": "submit"})
 
@@ -21,6 +21,6 @@ class RegisterForm(FlaskForm):
     #     "customer", "customer"), ("staff", "staff"), ("admin", "admin")])
     address = StringField("Address:", validators=[], render_kw={"placeholder": "Address"})
     date_of_birth = DateField("Date of birth:", validators=[], render_kw={"placeholder": "Date of Birth"})
-    password = PasswordField("Password:", validators=[InputRequired(), Length(min=8, max=50)], render_kw={"placeholder": "Password"}, default='password')
-    confirm_password = PasswordField("Confirm Password:", validators=[InputRequired(), Length(min=1, max=50)], render_kw={"placeholder": "Confirm Password"}, default='password')
+    password = PasswordField("Password:", validators=[InputRequired(), Length(min=6, max=50)], render_kw={"placeholder": "Password"}, default='password')
+    confirm_password = PasswordField("Confirm Password:", validators=[InputRequired(), Length(min=6, max=50)], render_kw={"placeholder": "Confirm Password"}, default='password')
     register_submit = SubmitField("Register", render_kw={"class": "btn submit", "type": "submit"})
