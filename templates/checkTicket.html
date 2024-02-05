@@ -31,7 +31,7 @@
                 <a href="{{ url_for('checkTicket.index') }}?sid={{ i.id }}" class="text-decoration-none text-white col-12 p-1 col-sm-6 col-md-4">
                     <div class="w-100 p-1 item " style="border-left:4px solid rgb(var({% if i.id ==  select_screening.id %}--bs-success-rgb{% else %}--bs-danger-rgb{% endif %}));background-color: #2c2c2c;border-radius: 6px">
                         <div style="font-weight: bold" class="m-0 mt-1 d-flex align-center justify-content-between"><h5>{{ i.start_date_time.strftime('%H:%M') }}</h5> <span class="text-secondary">NFT</span></div>
-                        <h6 class="m-0 mb-1" style="font-weight: bold">STANDARD</h6>
+                        <h6 class="m-0 mb-1" style="font-weight: bold">{{ i.movie.title }}</h6>
                     </div>
                 </a>
             {% endfor %}

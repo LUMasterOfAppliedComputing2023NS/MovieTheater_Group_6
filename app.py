@@ -66,42 +66,15 @@ with app.app_context():
 
 @app.route('/g', methods=['GET'])
 def g():
-    if User.get_any(where="email = 'admin@test.com'").__len__() == 0:
-        User.create(
-            first_name='test',
-            last_name='admin',
-            email='admin@test.com',
-            pass_hash=generate_password_hash('admin_pass'),
-            is_admin=True,
-            phone_number='12334567'
-        )
-    if User.get_any(where="email = 'staff@test.com'").__len__() == 0:
-        User.create(
-            first_name='test',
-            last_name='staff',
-            email='staff@test.com',
-            pass_hash=generate_password_hash('staff_pass'),
-            is_staff=True,
-            phone_number='1233456'
-        )
-    if User.get_any(where="email = 'manager@test.com'").__len__() == 0:
-        User.create(
-            first_name='test',
-            last_name='manager',
-            email='manager@test.com',
-            pass_hash=generate_password_hash('staff_pass'),
-            is_manager=True,
-            phone_number='123345678'
-        )
-    # user = User.get_one(where="email = 'admin@test.com'")
-    # if user is not None:
-    #     user.update_by_id(id=user.id, is_admin=True)
-    # user = User.get_one(where="email = 'staff@test.com'")
-    # if user is not None:
-    #     user.update_by_id(id=user.id, is_staff=True)
-    # user = User.get_one(where="email = 'manager@test.com'")
-    # if user is not None:
-    #     user.update_by_id(id=user.id, is_manager=True)
+    user = User.get_one(where="email = 'admin@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_admin=True)
+    user = User.get_one(where="email = 'staff@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_staff=True)
+    user = User.get_one(where="email = 'manager@test.com'")
+    if user is not None:
+        user.update_by_id(id=user.id, is_manager=True)
     return {'status': 'ok'}
 
 

@@ -48,6 +48,7 @@ class BaseModel(metaclass=ABCMeta):
 
     @classmethod
     def create(cls, **kwargs):
+        print(kwargs)
         s, conn = get_session()
         if kwargs.get('password',None) is not None:
             kwargs['pass_hash'] = generate_password_hash(kwargs.get('password', ''))

@@ -1,11 +1,5 @@
--- DROP DATABASE IF EXISTS movietheater;
--- CREATE DATABASE IF NOT EXISTS movietheater;
--- USE movietheater;
-
-
-DROP DATABASE IF EXISTS yana00918$movietheater2;
-CREATE DATABASE IF NOT EXISTS yana00918$movietheater2;
-USE yana00918$movietheater2;
+create database movietheater;
+use movietheater;
 
 create table coupon
 (
@@ -97,6 +91,7 @@ create table seat
     id              int auto_increment,
     hall_id         int           not null,
     seat_id_in_hall int           not null,
+    row             int           not null,
     col             int           not null,
     type            int default 0 not null,
     price           double        not null,
