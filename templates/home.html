@@ -19,7 +19,7 @@
         {% for i in now_showing %}
             <div style="min-width: 250px;max-width: 400px" class="d-flex flex-fill flex-column gap-1 align-center">
                 <div class="w-100">
-                    <img class="w-100" style="border-radius: 10px" src="{{ i.movie.poster_path }}">
+                    <img class="w-100" style="border-radius: 10px; width:128px;height:400px;" src="{{ i.movie.poster_path }}" >
                 </div>
                 <h5 style="font-weight: bold;">{{ i.movie.title }}</h5>
                 <p class="text-warning" style="font-size: 12px">{{ ','.join(i.movie.movie_types) }}</p>
