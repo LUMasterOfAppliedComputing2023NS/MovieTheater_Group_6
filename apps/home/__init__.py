@@ -23,12 +23,14 @@ def index():
     coming_soon_limit = request.args.get('coming_soon_page_size', 2, int)
     coming_soon_page_num = request.args.get('coming_soon_page_num', 1, int)
     coming_soon_offset = (coming_soon_page_num - 1) * coming_soon_limit
-    coming_soon_where = f"Year(start_date_time) < {today.strftime('%Y-%m-%d')}"
-    coming_soon:list[Screening] = Screening.get_any(
-        limit=coming_soon_limit,
-        offset=coming_soon_offset,
+    coming_soon_where = f"Date(start_date_time) > {today.strftime('%Y-%m-%d')}"
+    coming_soon_screening:list[Screening] = Screening.get_any(
+        limit=99999,
         where=coming_soon_where
     )
+    c_ids = set([str(i.movie_id) for i in coming_soon_screening])
+    print(c_ids)
+    coming_soon = Movie.get_any(limit=coming_soon_limit,offset=coming_soon_offset,where=f" id in ({','.join(c_ids)})")
     coming_soon_count = Screening.count(where=coming_soon_where)
     return render_template('home.html',
                            show_search=True,

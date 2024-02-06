@@ -52,7 +52,7 @@ def proceed(movie_id):
         flash('No screening found')
         return redirect(url_for('movies.detail', movie_id=movie_id))
     select_screening = Screening.get_by_id(sid)
-    movie = Movie.get_one(movie_id)
+    movie = Movie.get_one(where=f"id = {movie_id}")
     """ col-row """
     seats = [i.split('-') for i in seats]
     coupons = Coupon.get_any(limit=999, where=f"expiry_date > now()")
