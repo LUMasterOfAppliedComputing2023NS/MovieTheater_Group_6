@@ -1,52 +1,111 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a href="/" class="navbar-brand">
-            <img src="{{ url_for('static', filename='logo.png') }}" style="height: 50px" alt="logo"/>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Movies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Promotions</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact us</a>
-                </li>
-            </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a href="/" class="navbar-brand">
+        {% if not (current_user and current_user.is_authenticated) %}
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="logo"/>
+        {% else %}
+            <style>
+            .navbar .logo{
+                display: none;
+            }
+            @media screen and (max-width: 992px) {
+                .navbar .logo{
+                    height: 40px;
+                    display: unset;
+                }
+                .logo-text{
+                    display: none;
+                }
 
-            {% if current_user and current_user.is_authenticated %}
-                <div class="btn-group mx-3">
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                        {{ current_user.first_name }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item btn btn-danger" style="background-color: #FF0000;" href="#">Reset database</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-                    </ul>
-                </div>
+            }
+            </style>
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="logo"/>
+            <div class="logo-text">
+                <h1>{{ current_user.first_name }} {{ current_user.last_name }}</h1>
+                {% if current_user.is_admin %}
+                    <h4>Admin</h4>
+                {% elif current_user.is_manager %}
+                    <h4>Manager</h4>
+                {% elif current_user.is_staff %}
+                    <h4>Staff</h4>
+                {% else %}
+                    <h4>Customer</h4>
+                {% endif %}
+            </div>
+        {% endif %}
+    </a>
+    <div class="collapse d-flex flex-column navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav d-flex flex-column flex-fill mt-3 mb-3">
+            {% if not (current_user and current_user.is_authenticated) %}
+                <li class="nav-item">
+                    <a class="nav-link {% if "/home/" in req.url_rule.rule %}active{% endif %}" aria-current="page" href="{{ url_for('home.index') }}"><i class="fa-regular fa-house"></i><span>Home</span></a>
+                </li>
             {% else %}
-                <a class="btn btn-outline-info mx-3" type="submit" href="{{ url_for('login') }}">Login</a>
+                <li class="nav-item">
+                    <a class="nav-link {% if "/profile/" in req.url_rule.rule %}active{% endif %}" aria-current="page" href="{{ url_for('profile.index') }}"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+                </li>
+            {% endif %}
+            {% if current_user and current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link {% if 'Movie' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('admin.movie') }}"><i class="fa-regular fa-camera-movie"></i><span>Movie</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/admin/account' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('admin.account_index') }}"><i class="fa-regular fa-users"></i><span>Account</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'Promotion' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('admin.promotion') }}"><i class="fa-regular fa-trumpet"></i><span>Promotion</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'Report' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('admin.report') }}"><i class="fa-regular fa-pie-chart"></i><span>Report</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/admin/contractUs' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('admin.contractUs') }}"><i class="fa-regular fa-info"></i><span>Contract Info</span></a>
+                </li>
+            {% elif current_user and current_user.is_manager %}
+                <li class="nav-item">
+                    <a class="nav-link {% if '/managerMovies/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('manager_movie.index') }}"><i class="fa-regular fa-camera-movie"></i><span>Movies</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/managerStaff/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('manager_staff.index') }}"><i class="fa-regular fa-staff"></i><span>Staff</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/managerPromotion/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('manager_promotion.index') }}"><i class="fa-regular fa-trumpet"></i><span>Promotion</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/managerReport/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('manager_report.index') }}"><i class="fa-regular fa-pie-chart"></i><span>Report</span></a>
+                </li>
+            {% elif current_user and current_user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link {% if '/checkTicket/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('checkTicket.index') }}"><i class="fa-regular fa-tags"></i><span>Check Ticket</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/moviesSchedule/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('moviesSchedule.index') }}"><i class="fa-regular fa-camera-movie"></i><span>Movies Schedule</span></a>
+                </li>
+
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if '/promotions/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('promotions.index') }}"><i class="fa-regular fa-tags"></i><span>Promotions</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/movies/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('movies.index') }}"><i class="fa-regular fa-camera-movie"></i><span>Movies</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/gifts/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('gifts.index') }}"><i class="fa-regular fa-gift-card"></i><span>Gift Card</span></a>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/bookings/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('bookings.index') }}"><i class="fa-regular fa-bell"></i><span>Bookings</span></a>
+                    </li>
+                {% endif %}
             {% endif %}
 
-        </div>
+            <div class="flex-fill"></div>
+            {% if current_user and current_user.is_authenticated and not current_user.is_admin and not current_user.is_manager and not current_user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link {% if '/contractUs/' in req.url_rule.rule %}active{% endif %}" href="{{ url_for('contractUs.index') }}"><i class="fa-regular fa-square-question"></i><span>Contact us</span></a>
+                </li>
+            {% endif %}
+
+        </ul>
     </div>
 </nav>
 

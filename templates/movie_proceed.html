@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+.item{
+    cursor: pointer;
+}
+.item:hover{
+    opacity: .9;
+}
+.seat{
+    cursor: pointer;
+}
+.seat:hover{
+    opacity: .9;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex flex-column pb-5">
+    <div class="m-1 m-sm-3 d-flex flex-column position-relative text-white" style="height: max-content">
+        <img style="width: 100%;height: 100%" src="{{ movie.poster_path }}">
+        <div class="z-2 position-absolute top-0 d-flex flex-column start-0 end-0" style=" height: 100%;">
+            <div class="p-4 pb-0" style="background:linear-gradient(0deg,rgb(0,0,0),rgba(0,0,0,.5));">
+                <div class=" d-flex flex-column justify-content-end">
+                    <h1>{{ movie.title }}</h1>
+                    <p>{{ movie.duration_min }} min</p>
+                    <p>{{ movie.release_date }}</p>
+                </div>
+            </div>
+            <div class="z-2 flex-fill bg-black p-2" style="">
+                <div class="row mt-4 ps-3 pe-3 flex-wrap">
+                    <div class="col-12 p-1">
+                        <div class="w-100 p-1 item " style="border-left:4px solid rgb(var({% if i == 2 %}--bs-success-rgb{% else %}--bs-danger-rgb{% endif %}));background-color: #2c2c2c;border-radius: 6px">
+                            <div style="font-weight: bold" class="m-0 mt-1 d-flex align-center justify-content-between"><h5>{{ select_screening.start_date_time }}</h5> <span class="text-secondary">NFT</span></div>
+                            <h6 class="m-0 mb-1" style="font-weight: bold">STANDARD</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-between mt-1 align-bottom">
+                    <h4>Choose your tickets</h4>
+                    <span class="text-secondary"><u id="use-seat">0</u> / {{ seats.__len__() }} tickets selected</span>
+                </div>
+                <form action="{{ url_for('bookings.pay') }}" method="get" id="seat-form" class="row mt-4">
+                    <input name="sid" type="hidden" value="{{ select_screening.id }}" />
+                    <input name="seats" type="hidden" value="{{ request.args.get('seats') }}" />
+                    <div class="col-12 row justify-content-between align-center border-bottom pb-3 pt-3 border-secondary">
+                        <div class="w-auto ms-5 h-auto flex-row d-flex justify-content-center align-items-center">
+                            <span class="w-auto m-0">Adult</span>
+                        </div>
+                        <div class="d-flex flex-row align-items-center gap-3 w-auto">
+                            <span class="text-secondary">${{ select_screening.adult_price }}</span>
+                            <input name="adult" min="0" id="adult" onblur="change(this)"  data-price="{{ select_screening.adult_price }}" type="number" class="text-center bg-secondary text-white" style="width: 100px;border-radius: 8px" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-12 row justify-content-between align-center border-bottom pb-3 pt-3 border-secondary">
+                        <div class="w-auto ms-5 h-auto flex-row d-flex justify-content-center align-items-center">
+                            <span class="w-auto m-0">Child</span>
+                        </div>
+                        <div class="d-flex flex-row align-items-center gap-3 w-auto">
+                            <span class="text-secondary">${{ select_screening.child_price }}</span>
+                            <input id="child" min="0" name="child" onblur="change(this)" data-price="{{ select_screening.child_price }}" type="number" class="text-center bg-secondary text-white" style="width: 100px;border-radius: 8px" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-12 row justify-content-between align-center border-bottom pb-3 pt-3 border-secondary">
+                        <div class="w-auto ms-5 h-auto flex-row d-flex justify-content-center align-items-center">
+                            <span class="w-auto m-0">Student</span>
+                        </div>
+                        <div class="d-flex flex-row align-items-center gap-3 w-auto">
+                            <span class="text-secondary">${{ select_screening.student_price }}</span>
+                            <input id="student" min="0" name="student" onblur="change(this)" data-price="{{ select_screening.student_price }}" type="number" class="text-center bg-secondary text-white" style="width: 100px;border-radius: 8px" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-12 row justify-content-between align-center border-bottom pb-3 pt-3 border-secondary">
+                        <div class="w-auto ms-5 h-auto flex-row d-flex justify-content-center align-items-center">
+                            <span class="w-auto m-0">Senior</span>
+                        </div>
+                        <div class="d-flex flex-row align-items-center gap-3 w-auto">
+                            <span class="text-secondary">${{ select_screening.senior_price }}</span>
+                            <input id="senior" min="0" name="senior" onblur="change(this)" data-price="{{ select_screening.senior_price }}" type="number" class="text-center bg-secondary text-white" style="width: 100px;border-radius: 8px" value="0" />
+                        </div>
+                    </div>
+                    <input id="card" name="card" type="hidden" />
+                    <input id="expiry_date" name="expiry_date" type="hidden" />
+                    <input id="title" name="title" type="hidden" />
+                    <input id="c" name="c" type="hidden" />
+                    <input name="coupon_id" type="hidden">
+                    <input name="price_total" type="hidden" />
+                    <input name="movie_id" type="hidden" value="{{ movie.id }}" />
+                </form>
+
+                <div class="d-flex flex-row justify-content-between p-5">
+                    <div class="d-flex flex-column gap-2">
+                        <h6 class="m-0" style="font-weight: bold">Total $<u id="total">0</u></h6>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+
+                <form class="bg-black d-flex flex-column text-white">
+
+                    <div class="row mt-2">
+                        <span class="col-12">Choose Coupon</span>
+                        <div class="col-12">
+                            <select onchange="change()" name="card_id" class="text-secondary bg-transparent border-0" placeholder="Enter credit card number">
+                                <option data-price="0" value="null">please choose</option>
+                                {% for i in coupons %}
+                                    <option data-price="{{ i.discount }}" value="{{ i.id }}">{{ i.title }} <span class="text-danger">-${{ i.discount }}</span></option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+                <div class="row p-3">
+                    <div class="row bg-black text-white mt-4 p-2">
+                        <div class="row border-bottom">
+                            <p class="col-12">Card number</p>
+                            <div class="col-12">
+                                <input id="card_number" class="text-secondary bg-black" style="border: none" placeholder="Enter credit card number" />
+                            </div>
+                        </div>
+                        <div class="row border-bottom">
+                            <p class="col-12">Cardholder name</p>
+                            <div class="col-12 ">
+                                <input id="card_name" class="text-secondary bg-black" style="border: none" placeholder="Cardholder name" />
+                            </div>
+                        </div>
+                        <div class="row border-bottom">
+                            <div class="col-12 col-sm-6">
+                                <p class="col-12 ">Expiry (MM/YY)</p>
+                                <div class="col-12 ">
+                                    <input  id="expiry" type="date" class="text-secondary bg-black" style="border: none" placeholder="MM/YY" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <p>CVV</p>
+                                <div class="col-12">
+                                    <input  id="cvv" class="text-secondary bg-black" style="border: none" placeholder="CVV" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                </form>
+                <div class="mt-2 row ps-5 pe-5">
+                    <div class="col-sm-9"></div>
+                    <button onclick="submit()" class="col-12 col-sm-3  btn btn-primary">PAY</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function is_ok(){
+        if(
+            !$('#card_number').val() || !$('#card_name').val() || !$('#expiry').val() || !$('#cvv').val()
+        ){
+            return false
+        }
+        return true
+    }
+
+    function change(e){
+        const select = $('select[name=card_id]').val()
+        $('input[name=coupon_id]').val(select)
+        const selected = $('option[value='+select+']')
+        const discount = selected.length === 0 ? 0 : Number(selected.attr('data-price'))
+        const student = $('#student')
+        const adult = $("#adult")
+        const child = $("#child")
+        const senior = $("#senior")
+        const max = {{ seats.__len__() }}
+        let total = Number(student.val()) + Number(adult.val()) + Number(child.val()) + Number(senior.val())
+        if(total > max){
+            alert("The number of votes cannot be greater than "+max)
+            $(e).val(Number($(e).val())-(total-{{ seats.__len__() }}))
+            total = max
+        }
+        const total_price = Number(student.val()) * Number(student.attr('data-price')) +
+            Number(adult.val()) * Number(adult.attr('data-price')) +
+            Number(child.val()) * Number(child.attr('data-price')) +
+            Number(senior.val()) * Number(senior.attr('data-price'))
+        $("#use-seat").text(total)
+        $("#total").text(total_price-max*discount)
+        $("input[name=price_total]").val(total_price-max*discount)
+    }
+
+    function submit() {
+        if(!is_ok()){
+            alert('please input bank card')
+            return;
+        }
+        const student = $('#student')
+        const adult = $("#adult")
+        const child = $("#child")
+        const senior = $("#senior")
+        const max = {{ seats.__len__() }}
+        let total = Number(student.val()) + Number(adult.val()) + Number(child.val()) + Number(senior.val())
+        if(total !== max){
+            alert('Please select the number of completed votes, there is '+(max-total)+' vote left to choose')
+            return
+        }
+        const card_id = $('select[name=card_id]')
+        if(card_id.val() !== ''){
+            $('#card').val(card_id.val())
+        }
+        $('#seat-form').submit()
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+.item{
+    cursor: pointer;
+}
+.item:hover{
+    opacity: .9;
+}
+.seat{
+    cursor: pointer;
+}
+.seat:hover{
+    opacity: .9;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex flex-column pb-5">
+    <div class="m-1 m-sm-3 d-flex flex-column position-relative text-white" style="height: max-content">
+        <img style="width: 100%;height: 100%" src="/static/upload/1.webp">
+        <div class="z-2 position-absolute top-0 d-flex flex-column start-0 end-0" style=" height: 100%;">
+            <div class="pb-5" style="background:linear-gradient(0deg,rgb(0,0,0),rgba(0,0,0,.5));">
+                <div class="row p-2">
+                    <div class="col-6 col-sm-2">
+                        <img class="w-100" style="border-radius: 4px" src="{{ movie.poster_path }}" />
+                    </div>
+                    <div class="col-6 col-sm-10 d-flex flex-column justify-content-end">
+                        <h1>{{ movie.title }}</h1>
+                        <p>Run time:{{ movie.duration_min }} min</p>
+                        <p>Release date:{{ movie.release_date }}</p>
+                        <p>Genre:{{ ', '.join(movie.movie_types) }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="z-2 flex-fill bg-black p-2" style="">
+                <div class="row">
+                    <p>{{ movie.overview }}</p>
+                </div>
+                <h3 class="mt-3" style="font-weight: bold">Times & Tickets</h3>
+                <div class="container-fluid overflow-x-scroll">
+                    <div class="d-flex flex-row pb-1 gap-2" style="width: {{ 145 * movie.get_dates.__len__() }}px">
+                        {% for i in movie.get_dates %}
+                            <a href="{{ url_for('movies.detail',movie_id=movie.id) }}?date={{ i }}&sid={{ sid }}" class="p-1 btn btn-secondary {% if i==date %}bg-danger{% endif %}" style="width: 140px">
+                                <h6 style="font-weight: bold;" class="m-0">{{ i }}</h6>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if screening %}
+                    <button class="mt-3 border-1 border-light bg-transparent text-white" style="outline: none;border-radius: 3px"><i class="fa-regular fa-filter text-danger"></i>Legends & Filters</button>
+                    <div class="row mt-4 ps-3 pe-3 flex-wrap">
+                        {% for i in screening %}
+                            <a class="col-12 p-1 col-sm-6 col-md-4 text-white text-decoration-none" href="{{ url_for('movies.detail', movie_id=movie.id) }}?date={{ date }}&time={{ i.start_date_time.strftime('%H:%M') }}&sid={{ sid }}">
+                                <div class="w-100 p-1 item " style="border-left:4px solid rgb(var({% if i.start_date_time.strftime('%H:%M') == time %}--bs-success-rgb{% else %}--bs-danger-rgb{% endif %}));background-color: #2c2c2c;border-radius: 6px">
+                                    <div style="font-weight: bold" class="m-0 mt-1 d-flex align-center justify-content-between"><h5>{{ i.start_date_time.strftime('%H:%M') }}</h5> <span class="text-secondary">NFT</span></div>
+                                    <h6 class="m-0 mb-1" style="font-weight: bold">STANDARD</h6>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% if time %}
+                        <div class="seat user-select-none bg-black">
+                        <h3 class="mt-1 mb-1">Choose your seats</h3>
+                        <div class="d-flex align-center justify-content-center">
+                            <span class="text-secondary">SCREEN</span>
+                        </div>
+                        <div class="mt-4 mb-1 row">
+                            <div class="m-auto col-12 col-sm-10 col-md-8">
+                                {% for i in range(hall.number_of_columns) %}
+                                    <div class="row">
+                                        <span class="col">{{ i + 1 }}</span>
+                                        {% for j in range(hall.number_of_seats // hall.number_of_columns) %}
+                                            <i {% if i.__str__()+'-'+j.__str__() not in booking_seats %}onclick="select(this)"{% endif %} col="{{ i }}" row="{{ j }}" class="fa-solid p-1 text-center seat col {% if i.__str__()+'-'+j.__str__() in booking_seats %}fa-square-check text-secondary{% else %}fa-block text-white{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="row m-auto col-12 text-secondary col-sm-10 col-md-8 mt-4">
+                                <div class="col-6 col-sm-3">
+                                    <i class="fa-solid fa-circle text-white" style="border-radius: 50%;border: 1px solid #fff"></i>
+                                    <span>Available</span>
+                                </div>
+                                <div class="col-6 col-sm-3">
+                                    <i class="fa-solid fa-circle text-secondary" style="border-radius: 50%;border: 1px solid #fff"></i>
+                                    <span>Reserved</span>
+                                </div>
+                                <div class="col-6 col-sm-3">
+                                    <i class="fa-solid fa-circle text-black" style="border-radius: 50%;border: 1px solid #fff"></i>
+                                    <span>Unavailable</span>
+                                </div>
+                                <div class="col-6 col-sm-3">
+                                    <i class="fa-solid fa-circle text-danger" style="border-radius: 50%;border: 1px solid #fff"></i>
+                                    <span>Selected</span>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row-reverse">
+                                <form id="pro-form" class="d-none" method="get" action="{{ url_for('movies.proceed', movie_id=movie.id) }}">
+                                    <input name="seats" value="" />
+                                    <input name="sid" value="{{ select_screening.id }}" />
+                                </form>
+                                <a href="#" id="proceed" class="btn btn-primary">Proceed</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function select(e){
+        const ele = $(e)
+        if(ele.hasClass('text-danger')){
+            ele.addClass('text-white')
+            ele.removeClass('select-seat')
+            ele.removeClass('text-danger')
+        }else{
+            ele.removeClass('text-white')
+            ele.addClass('select-seat')
+            ele.addClass('text-danger')
+        }
+
+    }
+
+    $(()=>{
+        $('#proceed').click(e=>{
+            const v = $('input[name=seats]')
+            const selected = $('.select-seat')
+            const sets = []
+            selected.each((i,item)=>{
+                const row = item.getAttribute('row')
+                const col = item.getAttribute('col')
+                sets.push(col+'-'+row)
+            })
+            v.val(JSON.stringify(sets))
+            $('#pro-form').submit()
+        })
+    })
+</script>
+{% endblock %}

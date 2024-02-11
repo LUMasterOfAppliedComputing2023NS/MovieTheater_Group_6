@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Promotion</h2>
+        <div></div>
+    </div>
+<div class="row m-1">
+    <!-- 模态框触发按钮 -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCouponModal">
+  new coupon
+</button>
+
+<!-- 模态框 -->
+<div class="modal fade" id="newCouponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">new coupon</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('manager_promotion.index') }}?size=10&page={{ currentPage }}" id="newCouponForm">
+          <div class="form-group">
+            <label for="title">title</label>
+            <input type="text" class="form-control" name="title" id="title" placeholder="input title">
+          </div>
+          <div class="form-group">
+            <label for="remark">remark</label>
+            <textarea class="form-control" name="remark" id="remark" rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="code">code</label>
+            <input type="text" class="form-control" name="code" id="code" placeholder="input code">
+          </div>
+          <div class="form-group">
+            <label for="discount">discount</label>
+            <input type="number" class="form-control" id="discount" name="discount" placeholder="input discount">
+          </div>
+          <div class="form-group">
+            <label for="expiry_date">expiry date</label>
+            <input type="date" class="form-control datepicker" name="expiry_date" id="expiry_date" placeholder="select expiry date">
+          </div>
+          <div class="form-group">
+            <label for="use_limit">use limit</label>
+            <input type="number" class="form-control" name="use_limit" id="use_limit" placeholder="use_limit">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+        <button type="button" onclick="$('#newCouponForm').submit()" class="btn btn-primary" id="saveCouponBtn">save</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+ <div class="modal fade" id="updateCouponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">update coupon</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('manager_promotion.update') }}?size=10&page={{ currentPage }}" id="updateCouponForm">
+          <input type="hidden" name="id" id="id" value="" />
+            <div class="form-group">
+            <label for="title">title</label>
+            <input type="text" class="form-control" name="title" id="title" placeholder="input title">
+          </div>
+          <div class="form-group">
+            <label for="remark">remark</label>
+            <textarea class="form-control" name="remark" id="remark" rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="code">code</label>
+            <input type="text" class="form-control" name="code" id="code" placeholder="input code">
+          </div>
+          <div class="form-group">
+            <label for="discount">discount</label>
+            <input type="number" class="form-control" id="discount" name="discount" placeholder="input discount">
+          </div>
+          <div class="form-group">
+            <label for="expiry_date">expiry date</label>
+            <input type="date" class="form-control datepicker" name="expiry_date" id="expiry_date" placeholder="select expiry date">
+          </div>
+          <div class="form-group">
+            <label for="use_limit">use limit</label>
+            <input type="number" class="form-control" name="use_limit" id="use_limit" placeholder="use_limit">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+        <button type="button" onclick="$('#updateCouponForm').submit()" class="btn btn-primary" id="saveCouponBtn">save</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Title</th>
+            <th scope="col">Remark</th>
+          <th scope="col">Expiry date</th>
+          <th scope="col">Discount</th>
+            <th scope="col">Used counter</th>
+            <th scope="col">Use limit</th>
+          <th scope="col">Option</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in coupon %}
+            <tr>
+              <th scope="row">{{ i.id }}</th>
+              <td>{{ i.title }}</td>
+              <td>{{ i.remark }}</td>
+              <td>{{ i.expiry_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ i.discount }}</td>
+              <td>{{ i.used_counter }}</td>
+              <td>{{ i.use_limit }}</td>
+              <td>
+                  <a href="#" onclick="showUpdate('{{ i.id }}','{{ i.title }}','{{ i.remark }}','{{ i.expiry_date.strftime('%Y-%m-%d') }}','{{ i.discount }}','{{ i.use_limit }}')" class="btn-link btn-success text-success">update</a>
+                <a href="javascript:if(confirm('确定要删除选择的信息吗？\n此操作不可以恢复！')) {  window.location = '{{ url_for('manager_promotion.delete', cid=i.id) }}' }"   class="btn-link text-danger btn-danger">delete</a>
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <ul id="pagination" class="pagination">
+        {% for i in range(1,1+pages) %}
+            <li class='page-item {% if  i == currentPage %}active{% endif %}'>
+                <a class='page-link' href='{{ url_for('manager_promotion.index') }}?size=10&page={{ i }}' data-page=''>{{ i }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function showUpdate(id,title,remark,expiry_date,discount,use_limit){
+        $('#updateCouponForm #id').val(id)
+        $('#updateCouponForm #title').val(title)
+        $('#updateCouponForm #remark').val(remark)
+        $('#updateCouponForm #expiry_date').val(expiry_date)
+        $('#updateCouponForm #discount').val(discount)
+        $('#updateCouponForm #use_limit').val(use_limit)
+        $('#updateCouponModal').modal('show')
+    }
+</script>
+{% endblock %}

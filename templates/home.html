@@ -5,10 +5,66 @@
 {% endblock %}
 
 
-
 {% block content %}
-
-
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Now Showing</h2>
+        <div>
+            <a href="{{ url_for('home.index') }}?now_showing_page_num={{ now_showing_pre_page }}&coming_soon_page_num={{ now_showing_page }}" class="btn" style="background-color: #fdfdfd;color: #000" ><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="{{ url_for('home.index') }}?now_showing_page_num={{ now_showing_next_page }}&coming_soon_page_num={{ now_showing_page }}" class="btn" style="background-color: #fdfdfd;color: #000" ><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+    <div class="d-flex container flex-row gap-5 flex-wrap ps-4 pe-4">
+        {% for i in now_showing %}
+            <div style="min-width: 250px;max-width: 400px" class="d-flex flex-fill flex-column gap-1 align-center">
+                <div class="w-100">
+                    <img class="w-100" style="border-radius: 10px" src="{{ i.movie.poster_path }}">
+                </div>
+                <h5 style="font-weight: bold;">{{ i.movie.title }}</h5>
+                <p class="text-warning" style="font-size: 12px">{{ ','.join(i.movie.movie_types) }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="d-flex flex-row gap-5 flex-wrap">
+        <div class="d-flex flex-column">
+            <div class="d-flex flex-row align-center justify-content-between p-1">
+                <h2>Coming Soon</h2>
+                <div>
+                    <a href="{{ url_for('home.index') }}?now_showing_page_num={{ now_showing_page }}&coming_soon_page_num={{ now_showing_pre_page }}" class="btn" style="background-color: #fdfdfd;color: #000" ><i class="fa-solid fa-chevron-left"></i></a>
+                    <a href="{{ url_for('home.index') }}?now_showing_page_num={{ now_showing_page }}&coming_soon_page_num={{ now_showing_next_page }}" class="btn" style="background-color: #fdfdfd;color: #000" ><i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+            </div>
+            <div class="d-flex container flex-row gap-5 flex-wrap ps-4 pe-4">
+                {% for i in coming_soon %}
+                    <div style="min-width: 250px;max-width: 400px" class="d-flex flex-fill flex-column gap-1 align-center">
+                        <div class="w-100">
+                            <img class="w-100" style="border-radius: 10px" src="{{ i.poster_path }}">
+                        </div>
+                        <h5 style="font-weight: bold;">{{ i.title }}</h5>
+                        <p class="text-warning" style="font-size: 12px">{{ ','.join(i.movie_types) }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="d-flex flex-fill p-5 align-center justify-content-center">
+            <div class="d-flex ps-5 gap-5 w-100 flex-column align-center" style="border-radius: 10px;background-color: #7e528a;">
+                <div>
+                    <button class="btn bg-white text-black mt-5" style="border-radius: 999px" >Special for you!</button>
+                </div>
+                <h1>Promotion</h1>
+                <div class="d-flex flex-row-reverse align-items-end flex-fill mb-5 me-5">
+                    <a href="{{ url_for('promotions.index') }}" class="btn bg-white text-black h-auto d-flex align-center gap-2" style="border-radius: 999px" >
+                        Get Started
+                        <div style="width: 25px;height: 25px; border-radius: 50%" class="bg-black text-white">
+                            <i class="fa-solid fa-arrow-down-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}

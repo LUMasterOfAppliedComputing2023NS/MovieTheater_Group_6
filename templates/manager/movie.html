@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Movies</h2>
+        <div></div>
+    </div>
+    <div class="row m-1">
+        <!-- 模态框外部触发器 -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">
+  create movie
+</button>
+
+<!-- 模态框 -->
+<div class="modal fade" id="movieModal" tabindex="-1" role="dialog" aria-labelledby="movieModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="movieModalLabel">create movie</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="movieForm" method="post" action="{{ url_for('manager_movie.index') }}?size=10&page={{ currentPage }}">
+          <div class="form-group">
+            <label for="titleInput">title</label>
+            <input type="text" class="form-control" name="title" id="titleInput" required>
+          </div>
+          <div class="form-group">
+            <label for="languageInput">original language</label>
+            <input type="text" maxlength="2" name="original_language" class="form-control" id="languageInput" required>
+          </div>
+          <div class="form-group">
+            <label for="overviewInput">overview</label>
+            <textarea class="form-control" name="overview" id="overviewInput" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="posterPathInput">poster path</label>
+            <input type="text" class="form-control" name="poster_path" id="posterPathInput">
+          </div>
+          <div class="form-group">
+            <label for="releaseDateInput">release date</label>
+            <input type="date" class="form-control" name="release_date" id="releaseDateInput">
+          </div>
+          <div class="form-group">
+            <label for="durationInput">duration min</label>
+            <input type="number" class="form-control" name="duration_min" id="durationInput">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+        <button type="button" onclick="$('#movieForm').submit()" class="btn btn-primary" id="createMovieBtn">create</button>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Category</th>
+          <th scope="col">Original Language</th>
+            <th scope="col">Release Date</th>
+          <th width="200px" scope="col">Overview</th>
+          <th width="200px" scope="col">Poster Path</th>
+          <th scope="col">Duration Min</th>
+          <th scope="col">Option</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in movies %}
+            <tr>
+              <td scope="row">{{ i.title }}</td>
+              <td>{{ ','.join(i.movie_types) }}</td>
+              <td>{{ i.original_language }}</td>
+              <td>{{ i.release_date }}</td>
+              <td width="200px">{{ i.overview }}</td>
+              <td width="200px">{{ i.poster_path }}</td>
+              <td>{{ i.duration_min }}</td>
+              <td>
+                  <a href="{{ url_for('manager_movie.detail',mid=i.id) }}" class="btn-link btn-success">detail</a>
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <ul id="pagination" class="pagination">
+        {% for i in range(1,1+pages) %}
+            <li class='page-item {% if  i == currentPage %}active{% endif %}'>
+                <a class='page-link' href='{{ url_for('manager_promotion.index') }}?size=10&page={{ i }}' data-page=''>{{ i }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

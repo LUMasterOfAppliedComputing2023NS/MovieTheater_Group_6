@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Modal Form -->
+<div class="modal fade" id="newModal" tabindex="-1" role="dialog" aria-labelledby="newModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Contract Us</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="f">
+          <div class="form-group">
+            <label for="startTime">start time</label>
+            <input type="time" name="start_time" class="form-control" id="startTime" placeholder="start time">
+          </div>
+          <div class="form-group">
+            <label for="endTime">end time</label>
+            <input type="time" name="end_time" class="form-control" id="endTime" placeholder="end time">
+          </div>
+          <div class="form-group">
+            <label for="address">address</label>
+            <input type="text" name="address" class="form-control" id="address" placeholder="address">
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">phone</label>
+            <input type="tel" name="phone" class="form-control" id="phoneNumber" placeholder="phone">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        <button type="button" onclick="$('#f').submit()" class="btn btn-primary">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Contract us</h2>
+        <div>
+        </div>
+    </div>
+    <div class="row ps-4 pe-4 pt-3 pb-3 ms-4 me-4 bg-black text-white">
+        <div class="col-12 col-sm-6 d-flex flex-column gap-1">
+            <h2>Opening Hours</h2>
+            <p>{{ start_time }} - {{ end_time }}</p>
+            <p class="d-flex gap-3 align-center"><i class="fa-phone fa-regular"></i><span>{{ phone }}</span></p>
+            <p class="d-flex gap-3 align-center"><i class="fa-location fa-regular"></i><span>{{ address }}</span></p>
+            <div class="flex-fill"></div>
+            <button data-bs-toggle="modal" data-bs-target="#newModal" class="text-white pt-3 pb-3" style="border-radius:10px;background-color: #121543;border: 1px solid #4b54ff">EDIT</button>
+        </div>
+        <div class="col-12 row col-sm-6">
+            <div class="col-12 d-flex mt-2 align-center justify-content-center" >
+                <img class="w-100" style="max-width: 450px;border-radius: 7px" src="/static/map.png">
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

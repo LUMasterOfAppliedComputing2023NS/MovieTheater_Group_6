@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Customer</h2>
+        <div></div>
+    </div>
+<div class="row m-1">
+    <!-- 模态框触发按钮 -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCouponModal">
+  new customer
+</button>
+
+<!-- 模态框 -->
+<div class="modal fade" id="newCouponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">new customer</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('manager_staff.index') }}?size=10&page={{ currentPage }}" id="newCouponForm">
+           <div class="form-group">
+            <label for="first_name">first name</label>
+            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="first name">
+          </div>
+          <div class="form-group">
+            <label for="remark">last name</label>
+            <input class="form-control" name="last_name" id="last_name" placeholder="last name" />
+          </div>
+          <div class="form-group">
+            <label for="code">email</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="email">
+          </div>
+          <div class="form-group">
+            <label for="address">address</label>
+            <input type="text" class="form-control" id="address" name="address" placeholder="address">
+          </div>
+          <div class="form-group">
+            <label for="password">password</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="password">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+        <button type="button" onclick="$('#newCouponForm').submit()" class="btn btn-primary" id="saveCouponBtn">save</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+ <div class="modal fade" id="updateCouponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">update customer</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('admin.customer_update') }}?size=10&page={{ currentPage }}" id="updateCouponForm">
+          <input type="hidden" name="id" id="id" value="" />
+            <div class="form-group">
+            <label for="first_name">first name</label>
+            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="first name">
+          </div>
+          <div class="form-group">
+            <label for="remark">last name</label>
+            <input class="form-control" name="last_name" id="last_name" placeholder="last name" />
+          </div>
+          <div class="form-group">
+            <label for="code">email</label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="email">
+          </div>
+          <div class="form-group">
+            <label for="address">address</label>
+            <input type="text" class="form-control" id="address" name="address" placeholder="address">
+          </div>
+          <div class="form-group">
+            <label for="password">password</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="password">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+        <button type="button" onclick="$('#updateCouponForm').submit()" class="btn btn-primary" id="saveCouponBtn">save</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Customer Number</th>
+          <th scope="col">Full Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Address</th>
+          <th scope="col">Option</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in customers %}
+            <tr>
+              <th scope="row">{{ i.id }}</th>
+              <td>{{ i.first_name }} {{ i.last_name }}</td>
+              <td>{{ i.email }}</td>
+              <td>{{ i.address }}</td>
+              <td>
+                  <a href="#" onclick="showUpdate('{{ i.id }}','{{ i.first_name }}','{{ i.last_name }}','{{ i.email }}','{{ i.address }}')" class="btn-link btn-success text-success">update</a>
+                  <a href="javascript:if(confirm('确定要删除选择的信息吗？\n此操作不可以恢复！')) { window.location = '{{ url_for('manager_staff.delete',sid=i.id) }}' }"   class="btn-link text-danger btn-danger">delete</a>
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <ul id="pagination" class="pagination">
+        {% for i in range(1,1+pages) %}
+            <li class='page-item {% if  i == currentPage %}active{% endif %}'>
+                <a class='page-link' href='{{ url_for('admin.account_customer') }}?size=10&page={{ i }}' data-page=''>{{ i }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function showUpdate(id,first_name,last_name,email,address){
+        $('#updateCouponForm #id').val(id)
+        $('#updateCouponForm #first_name').val(first_name)
+        $('#updateCouponForm #last_name').val(last_name)
+        $('#updateCouponForm #email').val(email)
+        $('#updateCouponForm #address').val(address)
+        $('#updateCouponModal').modal('show')
+    }
+</script>
+{% endblock %}

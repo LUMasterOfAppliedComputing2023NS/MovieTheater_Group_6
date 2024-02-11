@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<!-- Trigger the modal with a button -->
+
+<!-- Modal -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateUserModalLabel">Update User</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="updateProfileForm" method="post">
+          <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" class="form-control" id="firstName" value="{{  current_user.first_name }}" name="first_name">
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" class="form-control" id="lastName" value="{{  current_user.last_name }}" name="last_name">
+          </div>
+          <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" class="form-control" id="address" value="{{  current_user.address }}" name="address">
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input disabled type="email" class="form-control" id="email" value="{{  current_user.email }}" name="email">
+          </div>
+          <div class="form-group">
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" class="form-control" id="dateOfBirth" value="{{  current_user.date_of_birth }}" name="date_of_birth">
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" class="form-control" id="phoneNumber" value="{{  current_user.phone_number }}" name="phone_number">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" onclick="updateProfileForm()" class="btn btn-primary" id="updateUserBtn">Update User</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+        <button type="button" class="close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="changePasswordForm" action="{{ url_for('profile.change_password') }}">
+          <div class="form-group">
+            <label for="newPassword">New Password:</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword">
+          </div>
+          <div class="form-group">
+            <label for="confirmNewPassword">Confirm New Password:</label>
+            <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" onclick="changePasswordForm()" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Profile</h2>
+        <div></div>
+    </div>
+    <div class="d-flex flex-column gap-1 bg-black text-white p-4">
+        <p>{{  current_user.first_name }} {{  current_user.last_name }}</p>
+        <p>Email: {{ current_user.email }}</p>
+        <p>Mobile: {{  current_user.phone_number }}</p>
+        <p>Date of Birth: {{ current_user.date_of_birth }}</p>
+        <div>
+            <a href="#" type="button" class="btn-link btn-primary" data-bs-toggle="modal" data-bs-target="#updateUserModal">
+              Update profile
+            </a>
+        </div>
+        <p class="mt-4">Password: ********</p>
+        <div>
+            <a class="btn-primary btn-link" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change password</a>
+        </div>
+        <p>Gift card balance: ${{ current_user.gift_card }}</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+    function updateProfileForm(){
+        $('#updateProfileForm').submit()
+    }
+
+    function changePasswordForm(){
+        $('#changePasswordForm').submit()
+    }
+
+    $(()=>{
+        $("#updateUserModal").modal({
+            //点击背景不关闭
+            backdrop:"static",
+            //触发键盘esc事件时不关闭
+            keyboard: false
+        });
+    })
+</script>
+{% endblock %}

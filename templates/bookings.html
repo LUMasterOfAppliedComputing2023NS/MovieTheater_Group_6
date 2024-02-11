@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Bookings</h2>
+        <div></div>
+    </div>
+    <div class="d-flex container flex-column gap-5 ps-4 pe-4">
+        {% for i in bookings %}
+            {% set screening = i.screening %}
+            {% set movie = screening.movie %}
+            <div class="row">
+                <div class="col-12 col-sm-4 col-md-3 gap-2 row">
+                    <div class="col-12" >
+                        <img class="w-100" style="border-radius: 10px" src="{{ movie.poster_path }}" />
+                    </div>
+                    <h6 style="font-weight: bold" class="col-12 text-center">{{ movie.title }}</h6>
+                </div>
+                <div class="col-12 col-sm-8 col-md-9">
+                    <h5 class="row">Ticket: {{ i.seats.__len__() }}</h5>
+                    <h5 class="row">Date: {{ screening.start_date_time.strftime('%Y-%m-%d') }}</h5>
+                    <h5 class="row">Time: {{ screening.start_date_time.strftime('%H:%M:%S') }} - {{ screening.end_date_time.strftime('%H:%M:%S') }}</h5>
+                    <div class="col-12 mt-3 pt-5 row">
+                        {% if i.status == 0 %}
+                        <a href="{{ url_for('bookings.cancel',bid=i.id) }}" class="col-12 col-sm-5 col-md-4 bg-black text-white">Cancel</a>
+                        {% else %}
+                            <span class="text-success">order completion</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex-fill"></div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

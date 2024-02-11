@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid h-100 overflow-y-scroll d-flex gap-4 flex-column pb-5">
+    {% include 'base/sub-navbar.html' %}
+    <div class="d-flex flex-row align-center justify-content-between p-1">
+        <h2>Gift Card</h2>
+        <div></div>
+    </div>
+    <div class="d-flex container flex-column gap-5 ps-4 pe-4">
+        <div class="row">
+            <div class="col-12 col-sm-4">
+                <img class="w-100" style="border-radius: 6px" src="/static/upload/1705033612173.png">
+            </div>
+            <form action="{{ url_for('gifts.pay') }}" id="f" method="post" class="col-12 col-sm-8 gap-3">
+                <div class="row col-12">
+                    <h2 class="col">E-Gift Card</h2>
+                </div>
+                <div class="row col-12">
+                    <h4 class="col">A gift as memorable as the experience.</h4>
+                </div>
+                <div class="row col-12">
+                    <p class="col">The perfect gift for any occasion. With the options of $50 and $100, the power is in your hands.</p>
+                </div>
+                <div class="row col-12">
+                    <div class="col-12 col-sm-6 row">
+                        <div class="col-12">
+                            <h5>Select Value</h5>
+                        </div>
+                        <div class="col-12">
+                            <select name="gift" class="w-75">
+                                <option value="0">please choose</option>
+                                <option value="100">$100</option>
+                                <option value="50">$50</option>
+                            </select>
+                        </div>
+                    </div>
+{#                    <div class="col-12 col-sm-6 row">#}
+{#                        <div class="col-12">#}
+{#                            <h5>Select Theme</h5>#}
+{#                        </div>#}
+{#                        <div class="col-12">#}
+{#                            <select class="w-75"></select>#}
+{#                        </div>#}
+{#                    </div>#}
+                </div>
+                {% if current_user %}
+                    <div class="row bg-black text-white mt-4 p-2">
+                        <div class="row border-bottom">
+                            <p class="col-12">Card number</p>
+                            <div class="col-12">
+                                <input name="card_number" class="text-secondary bg-black" style="border: none" placeholder="Enter credit card number" />
+                            </div>
+                        </div>
+                        <div class="row border-bottom">
+                            <p class="col-12">Cardholder name</p>
+                            <div class="col-12 ">
+                                <input name="card_name" class="text-secondary bg-black" style="border: none" placeholder="Cardholder name" />
+                            </div>
+                        </div>
+                        <div class="row border-bottom">
+                            <div class="col-12 col-sm-6">
+                                <p class="col-12 ">Expiry (MM/YY)</p>
+                                <div class="col-12 ">
+                                    <input type="date" name="expiry" class="text-secondary bg-black" style="border: none" placeholder="MM/YY" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <p>CVV</p>
+                                <div class="col-12">
+                                    <input name="cvv" class="text-secondary bg-black" style="border: none" placeholder="CVV" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="row">
+                    {% if current_user %}
+                        <div class="btn bg-black text-white mt-4 col-11 col-sm-6 col-md-4 col-lg-3" onclick="submit()">Pay</div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn bg-black text-white mt-4 col-11 col-sm-6 col-md-4 col-lg-3">Add to cart</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function is_ok(){
+        if(
+            !$('#card_number').val() || !$('#card_name').val() || !$('#expiry').val() || !$('#cvv').val()
+        ){
+            return false
+        }
+        return true
+    }
+
+    function submit(){
+        if(!is_ok()){
+            alert('please input bank card')
+            return;
+        }
+        $('#f').submit()
+    }
+</script>
+{% endblock %}
