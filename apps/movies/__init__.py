@@ -13,7 +13,7 @@ def index():
     movies = Movie.get_any(limit=9999,
                            where="id in (select movie_id from screening where TIME(start_date_time) > TIME(NOW()) and DATE(start_date_time) = DATE(NOW()))")
     soon = Movie.get_any(limit=9999,
-                         where="id in (select movie_id from screening where TIMESTAMP(start_date_time) > TIMESTAMP(NOW()) and DATE(start_date_time) > DATE(NOW()))")
+                         where="id in (select movie_id from screening where DATE(start_date_time) > DATE(NOW()) and DATE(start_date_time) > DATE(NOW()))")
     return render_template('movies.html', movies=movies, soon=soon)
 
 

@@ -50,9 +50,9 @@ create table movie_genre
     genre_id int not null,
     primary key (id, movie_id, genre_id),
     constraint movie_genre_ibfk_1
-        foreign key (movie_id) references movie (id),
+        foreign key (movie_id) references movie (id) on delete cascade on update cascade ,
     constraint movie_genre_ibfk_2
-        foreign key (genre_id) references genre (id)
+        foreign key (genre_id) references genre (id) on delete cascade on update cascade
 );
 
 create index genre_id
@@ -75,9 +75,9 @@ create table screening
     student_price   decimal(6, 2) default 0.00 null,
     senior_price    decimal(6, 2) default 0.00 null,
     constraint screening_ibfk_1
-        foreign key (hall_id) references hall (id),
+        foreign key (hall_id) references hall (id) on delete cascade on update cascade ,
     constraint screening_ibfk_2
-        foreign key (movie_id) references movie (id)
+        foreign key (movie_id) references movie (id) on delete cascade on update cascade
 );
 
 create index hall_id
@@ -97,7 +97,7 @@ create table seat
     price           double        not null,
     primary key (id, hall_id, seat_id_in_hall),
     constraint seat_ibfk_1
-        foreign key (hall_id) references hall (id)
+        foreign key (hall_id) references hall (id) on delete cascade on update cascade
 );
 
 create index hall_id
@@ -128,7 +128,7 @@ create table gift_card_log(
     point int default  0,
     create_at datetime default CURRENT_TIMESTAMP not null,
     constraint gift_card_log_ibfk_1
-        foreign key (user_id) references user (id)
+        foreign key (user_id) references user (id) on delete cascade on update cascade
 );
 
 create table booking
@@ -143,9 +143,9 @@ create table booking
     price_total       double                             not null,
     payment_id        int                                null,
     constraint booking_ibfk_1
-        foreign key (user_id) references user (id),
+        foreign key (user_id) references user (id) on delete cascade on update cascade ,
     constraint booking_ibfk_2
-        foreign key (screening_id) references screening (id)
+        foreign key (screening_id) references screening (id) on delete cascade on update cascade
 );
 
 create index screening_id
@@ -166,11 +166,11 @@ create table payment
     amount            double                             not null,
     final_amount      double                             not null,
     constraint payment_ibfk_1
-        foreign key (user_id) references user (id),
+        foreign key (user_id) references user (id) on delete cascade on update cascade ,
     constraint payment_ibfk_2
-        foreign key (coupon_id) references coupon (id),
+        foreign key (coupon_id) references coupon (id) on delete cascade on update cascade ,
     constraint payment_ibfk_3
-        foreign key (booking_id) references booking (id)
+        foreign key (booking_id) references booking (id) on delete cascade on update cascade
 );
 
 create index booking_id

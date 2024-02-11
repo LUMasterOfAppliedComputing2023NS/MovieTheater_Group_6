@@ -13,8 +13,8 @@ def index():
     now_showing_page_num = request.args.get('now_showing_page_num', 1, int)
     now_showing_offset = (now_showing_page_num - 1) * now_showing_limit
     today = datetime.date.today()
-    now_showing_where = f"Year(start_date_time) = {today.year} and Month(start_date_time) = {today.month} and Day(start_date_time) = {today.day}"
-    now_showing:list[Screening] = Screening.get_any(
+    now_showing_where = f"TIME(start_date_time) > TIME(NOW()) and DATE(start_date_time) = DATE(NOW())"
+    now_showing: list[Screening] = Screening.get_any(
         limit=now_showing_limit,
         offset=now_showing_offset,
         where=now_showing_where
@@ -24,13 +24,13 @@ def index():
     coming_soon_page_num = request.args.get('coming_soon_page_num', 1, int)
     coming_soon_offset = (coming_soon_page_num - 1) * coming_soon_limit
     coming_soon_where = f"Date(start_date_time) > {today.strftime('%Y-%m-%d')}"
-    coming_soon_screening:list[Screening] = Screening.get_any(
+    coming_soon_screening: list[Screening] = Screening.get_any(
         limit=99999,
         where=coming_soon_where
     )
     c_ids = set([str(i.movie_id) for i in coming_soon_screening])
     print(c_ids)
-    coming_soon = Movie.get_any(limit=coming_soon_limit,offset=coming_soon_offset,where=f" id in ({','.join(c_ids)})")
+    coming_soon = Movie.get_any(limit=coming_soon_limit, offset=coming_soon_offset, where=f" id in ({','.join(c_ids)})")
     coming_soon_count = Screening.count(where=coming_soon_where)
     return render_template('home.html',
                            show_search=True,
