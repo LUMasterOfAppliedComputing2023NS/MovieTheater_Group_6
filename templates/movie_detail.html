@@ -30,9 +30,8 @@
                     </div>
                     <div class="col-6 col-sm-10 d-flex flex-column justify-content-end">
                         <h1>{{ movie.title }}</h1>
-                        <p>Run time:{{ movie.duration_min }} min</p>
-                        <p>Release date:{{ movie.release_date }}</p>
-                        <p>Genre:{{ ', '.join(movie.movie_types) }}</p>
+                        <p>{{ movie.duration_min }} min</p>
+                        <p>{{ movie.release_date }}</p>
                     </div>
                 </div>
             </div>

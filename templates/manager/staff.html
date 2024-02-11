@@ -38,7 +38,7 @@
             <label for="remark">last name</label>
             <input class="form-control" name="last_name" id="last_name" placeholder="last name" />
           </div>
-          <div class="form-group d-none">
+          <div class="form-group">
             <label for="code">email</label>
             <input type="email" class="form-control" name="email" id="email" placeholder="email">
           </div>
@@ -124,7 +124,7 @@
               <td>{{ i.address }}</td>
               <td>
                   <a href="#" onclick="showUpdate('{{ i.id }}','{{ i.first_name }}','{{ i.last_name }}','{{ i.email }}','{{ i.address }}')" class="btn-link btn-success text-success">update</a>
-                  <a href="javascript:if(confirm('Are you sure you want to delete?\nThis operation is irreversible.')) { window.location = '{{ url_for('manager_staff.delete',sid=i.id) }}' }"   class="btn-link text-danger btn-danger">delete</a>
+                  <a href='{{ url_for('manager_staff.delete',sid=i.id) }}' class="btn-link text-danger btn-danger">delete</a>
               </td>
             </tr>
         {% endfor %}

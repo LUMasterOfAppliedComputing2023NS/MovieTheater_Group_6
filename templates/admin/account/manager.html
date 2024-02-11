@@ -124,7 +124,7 @@
               <td>{{ i.address }}</td>
               <td>
                   <a href="#" onclick="showUpdate('{{ i.id }}','{{ i.first_name }}','{{ i.last_name }}','{{ i.email }}','{{ i.address }}')" class="btn-link btn-success text-success">update</a>
-                  <a href="javascript:if(confirm('确定要删除选择的信息吗？\n此操作不可以恢复！')) { window.location = '{{ url_for('manager_staff.delete',sid=i.id) }}' }"   class="btn-link text-danger btn-danger">delete</a>
+                  <a href='{{ url_for('admin.manager_delete',sid=i.id) }}' class="btn-link text-danger btn-danger">delete</a>
               </td>
             </tr>
         {% endfor %}
